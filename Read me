@@ -1,0 +1,28 @@
+Read me
+Instruction to use Redoxime
+
+CATALASE PROGRAM
+
+The user should start by clicking the Graph XY excel button is used to open an excel with traces of enzyme activity.  
+ The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button.   
+
+Absorbance0 → initial absorbance of H2O2, which should be close to 0.5.   
+Absorbance60 → absorbance at 60 seconds.   
+Reaction Volume → total volume in the cuvette.   
+Samples Volume → volume of samples in the cuvette.   
+mg protein/mL → protein concentration of the original sample.  
+   
+ Formula:  
+ U = (1/60) x ln (Absorbance0/Absorbance60)  
+ U/mL = U x (Reaction volume/Sample volume)   
+ U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL)   
+ Results are in U/mg protein or mU/mg protein. All experiments are conducted at 240 nm.  
+ One unit will decompose 1.0 μmol of H2O2 per min at pH 7.0 at 25 °C  
+ Users are expected to enter the data in the table and choose or enter the names or codes of the samples.  
+ Each cell in the table can accept numbers, letters, or symbols.  
+   
+When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXIME.exe file.   
+The file will be saved in Excel format (named "catalaseactivity year-month-day hour-minute-second.xlsx"). The user should save it in a different folder.  
+If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.  
+The Plot button will create a plot from data. 
+The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.   
