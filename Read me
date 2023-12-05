@@ -17,6 +17,7 @@ mg protein/mL → protein concentration of the original sample.
  U/mL = U x (Reaction volume/Sample volume)   
  U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL)   
  Results are in U/mg protein or mU/mg protein. All experiments are conducted at 240 nm.  
+ The result is automatically copied to clipboard so the user may paste in the table provided or in another software
  One unit will decompose 1.0 μmol of H2O2 per min at pH 7.0 at 25 °C  
  Users are expected to enter the data in the table and choose or enter the names or codes of the samples.  
  Each cell in the table can accept numbers, letters, or symbols.  
@@ -46,7 +47,8 @@ The user should start by clicking the Graph XY excel button is used to open an e
    
   U/mL = U x (Reaction volume/Sample volume)  
   U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL)  
-  Results are in U/mg protein or mU/mg protein. All experiments are conducted at 340 nm. 
+  Results are in U/mg protein or mU/mg protein. All experiments are conducted at 340 nm.
+  The result is automatically copied to clipboard so the user may paste in the table provided or in another software
           
 SAVING DATA:  
   Users are expected to enter the data in the table and choose or enter the names or codes of the samples. 
