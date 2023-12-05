@@ -26,3 +26,5 @@ The file will be saved in Excel format (named "catalaseactivity year-month-day h
 If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.  
 The Plot button will create a plot from data. 
 The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.   
+
+GLUTATHIONE PEROXIDASE PROGRAM
