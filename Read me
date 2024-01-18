@@ -1,65 +1,99 @@
 Read me
-Instruction to use Redoxime
+Instruction to use Redoxyme
+Contact email: heberty.facundo@gmail.com
 
 CATALASE PROGRAM
 
-The user should start by clicking the Graph XY excel button is used to open an excel with traces of enzyme activity.  
-The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button.   
+The user should start by clicking the Graph XY excel. This button is used to open an excel with line graphs of enzyme activity (Absorbance x Time).
 
-Absorbance0 → initial absorbance of H2O2, which should be close to 0.5.   
-Absorbance60 → absorbance at 60 seconds.   
-Reaction Volume → total volume in the cuvette.   
-Samples Volume → volume of samples in the cuvette.   
-mg protein/mL → protein concentration of the original sample.  
-   
- Formule:  
- U = (1/60) x ln (Absorbance0/Absorbance60)  
- U/mL = U x (Reaction volume/Sample volume)   
- U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL)   
- Results are in U/mg protein or mU/mg protein. All experiments are conducted at 240 nm.  
- The result is automatically copied to clipboard so the user may paste in the table provided or in another software
- One unit will decompose 1.0 μmol of H2O2 per min at pH 7.0 at 25 °C  
- Users are expected to enter the data in the table and choose or enter the names or codes of the samples.  
- Each cell in the table can accept numbers, letters, or symbols.  
-   
-When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXIME.exe file.   
-The file will be saved in Excel format (named "catalaseactivity year-month-day hour-minute-second.xlsx"). The user should save it in a different folder.  
-If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.  
+Absorbance 0 sample → initial absorbance of H2O2, which should be close to 0.5. 
+Absorbance 60 sample → absorbance at 60 seconds. 
+Reaction Volume → total volume in the cuvette. 
+Samples Volume → volume of samples in the cuvette. 
+mg protein/mL → protein concentration of the original sample.
+
+Formula:
+U = (1/60) x ln (Absorbance 0 sample/Absorbance 60 sample)
+U total/mL = U x (Reaction volume/Sample volume) 
+U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL) 
+Results are in U/mg protein. All experiments are conducted at 240 nm.
+The result is automatically copied to clipboard so the user may paste in the table provided or in another software
+One unit will decompose 1.0 μmol of H2O2 per min at pH 7.0 at 25 °C
+Users are expected to enter the data in the table and choose or enter the names or codes of the samples.
+Each cell in the table can accept numbers, letters, or symbols. The plot function will not work with letters or symbols
+
+When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXYME.exe file. 
+The file will be saved in Excel format (named "catalaseactivity year-month-day hour-minute-second.xlsx"). The user should save it in a different folder.
+If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.
+The Plot button will create a plot from data. The Graph XY excel button is used to open an excel with traces of enzyme activity.
+
 The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. 
-The Plot button will create a plot from data. 
-The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.   
+
+The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file. 
+Contact email: heberty.facundo@gmail.com
+
+
+The user can open the above-saved files or any other file on their computer by pressing the OPEN FILE button.
+
 
 GLUTATHIONE PEROXIDASE PROGRAM
 
-The user should start by clicking the Graph XY excel button is used to open an excel with traces of enzyme activity. 
+The user should start by clicking the Graph XY excel. This button is used to open an excel with line graphs of enzyme activity (Absorbance x Time).
 
-1 unit of GPx-1 is defined as the amount of enzyme necessary to catalyze the oxidation (by H2O2)  
- of 1.0 micromole GSH to GSSG, per minute at 25 ºC, pH 7.0. 
-  Absorbance0 Sample → initial absorbance of NAD(P)H.  
-  Absorbance60 Sample → final absorbance.  
-  Absorbance0 blank→ initial absorbance of NAD(P)H.  
-  Absorbance60 blank→ final absorbance of NAD(P)H.  
-  Reaction Volume → total volume in the cuvette.   
-  Samples Volume → volume of samples in the cuvette.  
-  Dilution Factor → dilution of sample before adding to the cuvette.  
-  Coeficient extinction of NADPH at 340 nm at 1 cm pathlength is 6.22. If the pathlength is 0.5 consider 3.11  
-  mg protein/mL → protein concentration of the original sample. 
-   
-  U/mL = U x (Reaction volume/Sample volume)  
-  U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL)  
-  Results are in U/mg protein or mU/mg protein. All experiments are conducted at 340 nm.
-  The result is automatically copied to clipboard so the user may paste in the table provided or in another software
-          
-SAVING DATA:  
-  Users are expected to enter the data in the table and choose or enter the names or codes of the samples. 
-  Each cell in the table can accept numbers, letters, or symbols. 
-   
-When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXIME file.  
-The file will be saved in Excel format (named "GPXactivity year-month-day hour-minute-second.xlsx").  
-If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec. 
-The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. 
-The Plot button will create a plot from data.  
-The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button.   
-   
+The user can open the above-saved files or any other file on their computer by pressing the OPEN FILE button.
+
+1 unit of GPx-1 is defined as the amount of enzyme necessary to catalyze the oxidation of 1.0 micromole GSH (by H2O2) to GSSG, per minute at 25 ºC, pH 7.0.
+Absorbance 0 Sample → initial absorbance of NAD(P)H 
+Absorbance 60 Sample → final absorbance 
+Absorbance 0 blank→ initial absorbance of NAD(P)H 
+Absorbance 60 blank→ final absorbance of NAD(P)H 
+Reaction Volume → total volume in the cuvette
+Samples Volume → volume of samples in the cuvette 
+Dilution Factor → dilution of sample before adding to the cuvette 
+Coefficient extinction of NADPH at 340 nm at 1 cm pathlength is 6.22. If the pathlength is 0.5 consider 3.11. 
+mg protein/mL → protein concentration of the original sample
+
+U/mL = U x (Reaction volume/Sample volume) 
+U/mg protein = (U total/mL)/concentration of sample protein in mg/mL) 
+Results are in U/mg protein or mU/mg protein. All experiments are conducted at 340 nm.
+
+The result is automatically copied to clipboard so the user may paste in the table provided or in another software.
+SAVING DATA: 
+Users are expected to enter the data in the table and choose or enter the names or codes of the samples.
+Each cell in the table can accept numbers, letters, or symbols. The plot function will not work with letters or symbols.
+
+When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXYME file. 
+The file will be saved in Excel format (named "GPXactivity year-month-day hour-minute-second.xlsx"). 
+If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.
+The Plot button will create a plot from data. The Graph XY excel button is used to open an excel with traces of enzyme activity.
+The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button.
+
 The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.
 
+
+The user can open the above-saved files or any other file on their computer by pressing the OPEN FILE button.
+
+
+SUPEROXIDE DISMUTASE
+
+Absorbance Blank → absorbance of the blank tube - A1 
+Absorbance Sample → absorbance of the sample tube - A2 
+Reaction Volume → total volume in the cuvette 
+Samples Volume → volume of samples in the cuvette 
+mg protein/mL → protein concentration of the original sample
+
+Formula: SOD U/mL = (((A1-A2)/A1)/ 0.5) x (Reaction volume (mL) /Sample volume (mL)) x DF
+U/mg protein =SOD U/mL / mg protein/mL 
+
+The result is automatically copied to clipboard so the user may paste in the table provided or in another software.
+
+Users are expected to enter the data in the table and choose or enter the names or codes of the samples.
+Each cell in the table can accept numbers, letters, or symbols. The plot function will not work with letters or symbols. 
+
+When pressed, the SAVE BUTTON will save a file in the same folder as the Redoxyme.exe file. 
+The file will be saved in Excel format (named "SODactivity year-month-day hour-minute-second.xlsx"). The user should modify the name and save it in a different folder.
+If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.
+
+The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. 
+
+The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.
