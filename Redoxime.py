@@ -42,12 +42,11 @@ class MainWindow(tk.Tk):
                                  font=("TkDefaultFont", 20, "bold"))
         self.button3.grid(row = 10, column = 6, columnspan = 3, padx = 5, pady = 15)
 
-        ##load image
         __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
         self.logo = PhotoImage(file=os.path.join(__location__, "Redox reactions.png")).subsample(5, 5)
 
         label = tk.Label(self, image=self.logo)
-        label.image = self.logo  # Keep a reference to the image to avoid garbage collection
+        label.image = self.logo
         label.grid(row=3, column=5, sticky="new")
         self.grid_columnconfigure(8, weight=1)
         self.grid_rowconfigure(3, weight=1)
@@ -102,10 +101,8 @@ class CatalaseWindow(tk.Toplevel):
             print(output)
             output = round(output, 4)
             Output_label.config(text=str(output))
-            # Copy the output value to the clipboard
             clipboard.copy(output)
 
-        # Output_label.config(text = str(output))
         Absorbance0entry = tk.Entry(frame1, width=12, text = Absorbance0)
         Absorbance60entry = tk.Entry(frame1, width=12, textvariable=Absorbance60)
         Reaction_volumeentry = tk.Entry(frame1, width=12, textvariable=Reaction_volume)
@@ -134,7 +131,6 @@ class CatalaseWindow(tk.Toplevel):
         Output_label.grid(row=7, column=2)
 
         calculate_Button = tk.Button(frame1, text='Calculate', command=answer, cursor="hand2")
-        # Calculate button to grid
         calculate_Button.grid(row="8", column="4")
 
         self.bind('<Return>', lambda event: calculate_Button.invoke())
@@ -288,9 +284,8 @@ class CatalaseWindow(tk.Toplevel):
                    frame2_sampleentry25, frame2_sampleentry26, frame2_sampleentry27, frame2_sampleentry28,
                    frame2_sampleentry29, frame2_sampleentry30, frame2_sampleentry31, frame2_sampleentry32,
                    frame2_sampleentry33, frame2_sampleentry34, frame2_sampleentry35, frame2_sampleentry36]
-        # Iterate over the list in groups of 6, skipping every other group
+
         for i in range(0, len(widgets), 12):
-            # Get the current group of 6 widgets
             widget_group = widgets[i:i + 6]
             for widget in widget_group:
                 widget.configure(background='light gray')
@@ -301,7 +296,6 @@ class CatalaseWindow(tk.Toplevel):
         frame3.place(relx=0.2, rely=0.95, anchor='sw')
 
         def open_excel():
-            # Open file dialog
             file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
                                                    filetypes=(("Excel files", "*.xlsx"), ("all files", "*.*")))
             if file_path.endswith(".xlsx"):
@@ -383,7 +377,6 @@ class CatalaseWindow(tk.Toplevel):
             group6_mean = np.mean(group6_filtered)
             group6_sd = stddev(group6_filtered)
 
-            # Generate the plot
             fig, ax = plt.subplots()
 
             bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
@@ -401,7 +394,6 @@ class CatalaseWindow(tk.Toplevel):
 
             plt.show()
 
-        # Create the button
         plot_button = tk.Button(frame3, text='Plot', font=("Arial", "12"),
                                 width=16, bg="#04D4ED", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
@@ -426,7 +418,6 @@ class CatalaseWindow(tk.Toplevel):
 
         def save_member():
             file_name = "Catalaseactivity_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".xlsx"
-            # file = openpyxl.load_workbook(file_name)
             file = openpyxl.Workbook()
             sheet = file.active
 
@@ -437,8 +428,6 @@ class CatalaseWindow(tk.Toplevel):
                     i = row * cols + col
                     sheet.cell(column=col + 2, row=row + 3, value=widgets[i].get())
 
-            # xlfile=pd.read_excel(file_name, sheet_name='Sheet')
-
             file.save(file_name)
             file.close()
 
@@ -448,11 +437,9 @@ class CatalaseWindow(tk.Toplevel):
         save_button.grid(row= 1, column = 4)
 
         def openFile():
-            # selecting the file using the askopenfilename() method of filedialog
             the_file = filedialog.askopenfilename(title="Select the updated file", filetypes=[("All files", "*.*")])
             if the_file:
                 print(f"Selected file: {the_file}")
-                # opening a file using the startfile() method of the os module
                 try:
                     os.startfile(os.path.abspath(the_file))
                 except Exception as e:
@@ -504,7 +491,6 @@ class CatalaseWindow(tk.Toplevel):
                                   bd=1, justify='left', font=('calibre', 16))
 
             label_name.grid(row=4, column=0, sticky='w')
-            # label_name.grid(row = 9, column = 0)
             button_voltar = tk.Button(window2, text='Close', font=('calibre', 20), command=window2.destroy, cursor="hand2")
             button_voltar.place(x=1050, y=600)
 
@@ -522,7 +508,6 @@ class CatalaseWindow(tk.Toplevel):
 
             reg = LinearRegression()
 
-            # Create a label for x values
             x_label = tk.Label(window_prot1, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
 
@@ -530,7 +515,6 @@ class CatalaseWindow(tk.Toplevel):
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
 
-            # Create a label for y values
             y_label = tk.Label(window_prot1, text="Absorbance (A.U) (Y)")
             y_label.grid(row=1, column=0, sticky="W")
 
@@ -538,7 +522,6 @@ class CatalaseWindow(tk.Toplevel):
             for i, entry in enumerate(y_entries):
                 entry.grid(row=1, column=i + 1)
 
-            # These entries are filled automatically with the values in slope and intercept
             slo_entry = tk.Entry(window_prot1)
             slo_entry.grid(row=3, column=2, sticky="W")
 
@@ -560,15 +543,12 @@ class CatalaseWindow(tk.Toplevel):
                     x = np.array(x).reshape(-1, 1)
                     y = np.array(y)
 
-                    # Train the model
                     reg.fit(x, y)
 
-                    # Get slope and intercept
                     slope = reg.coef_[0]
                     intercept = reg.intercept_
                     r_squared = reg.score(x, y)
 
-                    # Display slope and intercept values
                     slope_value_label.config(text=str(slope))
                     intercept_value_label.config(text=str(intercept))
 
@@ -578,7 +558,6 @@ class CatalaseWindow(tk.Toplevel):
                     int_entry.delete(0, 'end')
                     int_entry.insert(0, str(intercept))
 
-                    # Plot the x, y plot
                     plt.scatter(x, y)
                     plt.plot(x, reg.predict(x), color='Red')
                     plt.xlabel("Protein Concentration (mg/mL)")
@@ -589,26 +568,21 @@ class CatalaseWindow(tk.Toplevel):
                     plt.show()
 
                 else:
-                    # Show an error message if x and y are empty
                     messagebox.showerror("Error", "Did you forget the numbers? Decimals must be separated by dot! Do not use comma.")
 
-            # Create a button to trigger calculation and plot
             calculate_button = tk.Button(window_prot1, text="Calculate", command=calculate)
             calculate_button.grid(row=2, column=1, pady=10)
 
-            # Create a label for slope
             slope_label = tk.Label(window_prot1, text="Slope:")
             slope_label.grid(row=3, column=0, sticky="W")
 
-            # Create a label to display slope value
             slope_value_label = tk.Label(window_prot1)
             slope_value_label.grid(row=3, column=1)
 
-            # Create a label for intercept
             intercept_label = tk.Label(window_prot1, text="Intercept:")
             intercept_label.grid(row=4, column=0, sticky="W")
 
-            # Create a label to display intercept value
+
             intercept_value_label = tk.Label(window_prot1)
             intercept_value_label.grid(row=4, column=1)
 
@@ -618,7 +592,6 @@ class CatalaseWindow(tk.Toplevel):
             sample_entry = tk.Entry(window_prot1)
             sample_entry.grid(row=4, column=4, sticky="W")
 
-            # Function to make calculation and plot
             def sample():
                 first = float(sample_entry.get()) - float(int_entry.get())
                 second = float(slo_entry.get())
@@ -729,7 +702,6 @@ class GpxWindow(tk.Toplevel):
         Output_label.grid(row=11, column=2)
 
         calculate_Button = tk.Button(frame1, text='Calculate', command=answer, cursor="hand2")
-        # Calculate button to grid
         calculate_Button.grid(row="12", column="4")
 
         self.bind('<Return>', lambda event: calculate_Button.invoke())
@@ -876,7 +848,6 @@ class GpxWindow(tk.Toplevel):
         frame3.place(relx=0.2, rely=0.95, anchor='sw')
 
         def open_excel():
-            # Open file dialog
             file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
                                                    filetypes=(("Excel files", "*.xlsx"), ("all files", "*.*")))
             if file_path.endswith(".xlsx"):
@@ -958,7 +929,6 @@ class GpxWindow(tk.Toplevel):
             group6_mean = np.mean(group6_filtered)
             group6_sd = stddev(group6_filtered)
 
-            # Generate the plot
             fig, ax = plt.subplots()
 
             bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
@@ -976,7 +946,6 @@ class GpxWindow(tk.Toplevel):
 
             plt.show()
 
-        # Create the button
         plot_button = tk.Button(frame3, text='Plot', font=("Arial", "12"),
                                 width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
@@ -1048,11 +1017,9 @@ class GpxWindow(tk.Toplevel):
 
 
         def openFile():
-            # selecting the file using the askopenfilename() method of filedialog
             the_file = filedialog.askopenfilename(title="Select the updated file", filetypes=[("All files", "*.*")])
             if the_file:
                 print(f"Selected file: {the_file}")
-                # opening a file using the startfile() method of the os module
                 try:
                     os.startfile(os.path.abspath(the_file))
                 except Exception as e:
@@ -1106,7 +1073,6 @@ class GpxWindow(tk.Toplevel):
                              bd=1, justify='left', font=('calibre',14))
 
             label_name.grid(row=4, column=0, sticky='w')
-            #label_name.grid(row = 9, column = 0)
             button_voltar = tk.Button(window2, text = 'Close', font=('calibre',20), command = window2.destroy, cursor="hand2")
             button_voltar.place(x = 1050, y= 600)
 
@@ -1124,7 +1090,6 @@ class GpxWindow(tk.Toplevel):
 
             reg = LinearRegression()
 
-            # Create a label for x values
             x_label = tk.Label(window_prot2, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
 
@@ -1132,7 +1097,6 @@ class GpxWindow(tk.Toplevel):
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
 
-            # Create a label for y values
             y_label = tk.Label(window_prot2, text="Absorbance (A.U) (Y)")
             y_label.grid(row=1, column=0, sticky="W")
 
@@ -1140,7 +1104,6 @@ class GpxWindow(tk.Toplevel):
             for i, entry in enumerate(y_entries):
                 entry.grid(row=1, column=i + 1)
 
-            # These entries are filled automatically with the values in slope and intercept
             slo_entry = tk.Entry(window_prot2)
             slo_entry.grid(row=3, column=2, sticky="W")
 
@@ -1162,15 +1125,12 @@ class GpxWindow(tk.Toplevel):
                     x = np.array(x).reshape(-1, 1)
                     y = np.array(y)
 
-                    # Train the model
                     reg.fit(x, y)
 
-                    # Get slope and intercept
                     slope = reg.coef_[0]
                     intercept = reg.intercept_
                     r_squared = reg.score(x, y)
 
-                    # Display slope and intercept values
                     slope_value_label.config(text=str(slope))
                     intercept_value_label.config(text=str(intercept))
 
@@ -1180,7 +1140,6 @@ class GpxWindow(tk.Toplevel):
                     int_entry.delete(0, 'end')
                     int_entry.insert(0, str(intercept))
 
-                    # Plot the x, y plot
                     plt.scatter(x, y)
                     plt.plot(x, reg.predict(x), color='Red')
                     plt.xlabel("Protein Concentration (mg/mL)")
@@ -1191,26 +1150,20 @@ class GpxWindow(tk.Toplevel):
                     plt.show()
 
                 else:
-                    # Show an error message if x and y are empty
                     messagebox.showerror("Error", "Did you forget the numbers? Decimals must be separated by dot! Do not use comma.")
 
-            # Create a button to trigger calculation and plot
             calculate_button = tk.Button(window_prot2, text="Calculate", command=calculate)
             calculate_button.grid(row=2, column=1, pady=10)
 
-            # Create a label for slope
             slope_label = tk.Label(window_prot2, text="Slope:")
             slope_label.grid(row=3, column=0, sticky="W")
 
-            # Create a label to display slope value
             slope_value_label = tk.Label(window_prot2)
             slope_value_label.grid(row=3, column=1)
 
-            # Create a label for intercept
             intercept_label = tk.Label(window_prot2, text="Intercept:")
             intercept_label.grid(row=4, column=0, sticky="W")
 
-            # Create a label to display intercept value
             intercept_value_label = tk.Label(window_prot2)
             intercept_value_label.grid(row=4, column=1)
 
@@ -1220,7 +1173,6 @@ class GpxWindow(tk.Toplevel):
             sample_entry = tk.Entry(window_prot2)
             sample_entry.grid(row=4, column=4, sticky="W")
 
-            # Function to make calculation and plot
             def sample():
                 first = float(sample_entry.get()) - float(int_entry.get())
                 second = float(slo_entry.get())
@@ -1275,7 +1227,6 @@ class SodWindow(tk.Toplevel):
             output = U_mgprot * float(Dilution_factor.get())
             output = round(output, 4)
             Output_label.config(text=str(output))
-            # Copy the output value to the clipboard
             clipboard.copy(output)
 
         AbsBlankentry = tk.Entry(frame1, width=12, textvariable=AbsBlank)
@@ -1310,7 +1261,6 @@ class SodWindow(tk.Toplevel):
         Output_label.grid(row=8, column=2)
 
         calculate_Button = tk.Button(frame1, text='Calculate', command=answer, cursor="hand2")
-        # Calculate button to grid
         calculate_Button.grid(row="9", column="4")
 
         self.bind('<Return>', lambda event: calculate_Button.invoke())
@@ -1458,7 +1408,6 @@ class SodWindow(tk.Toplevel):
         frame3.place(relx=0.2, rely=0.95, anchor='sw')
 
         def open_excel():
-            # Open file dialog
             file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
                                                    filetypes=(("Excel files", "*.xlsx"), ("all files", "*.*")))
             if file_path.endswith(".xlsx"):
@@ -1540,7 +1489,6 @@ class SodWindow(tk.Toplevel):
             group6_mean = np.mean(group6_filtered)
             group6_sd = stddev(group6_filtered)
 
-            # Generate the plot
             fig, ax = plt.subplots()
 
             bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
@@ -1560,7 +1508,6 @@ class SodWindow(tk.Toplevel):
 
             plt.show()
 
-        # Create the button
         plot_button = tk.Button(frame3, text='Plot', font=("Arial", "12"),
                                 width=16, bg="#99FA13", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
@@ -1608,7 +1555,6 @@ class SodWindow(tk.Toplevel):
                        frame2_sampleentry29, frame2_sampleentry30, frame2_sampleentry31, frame2_sampleentry32,
                        frame2_sampleentry33, frame2_sampleentry34, frame2_sampleentry35, frame2_sampleentry36]
             file_name = "SODactivity_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".xlsx"
-            # file = openpyxl.load_workbook(file_name)
             file = openpyxl.Workbook()
             sheet = file.active
 
@@ -1619,8 +1565,6 @@ class SodWindow(tk.Toplevel):
                     i = row * cols + col
                     sheet.cell(column=col + 2, row=row + 3, value=widgets[i].get())
 
-            # xlfile=pd.read_excel(file_name, sheet_name='Sheet')
-
             file.save(file_name)
             file.close()
 
@@ -1630,11 +1574,9 @@ class SodWindow(tk.Toplevel):
         save_button.grid(row= 1, column = 4)
 
         def openFile():
-            # selecting the file using the askopenfilename() method of filedialog
             the_file = filedialog.askopenfilename(title="Select the updated file", filetypes=[("All files", "*.*")])
             if the_file:
                 print(f"Selected file: {the_file}")
-                # opening a file using the startfile() method of the os module
                 try:
                     os.startfile(os.path.abspath(the_file))
                 except Exception as e:
@@ -1683,7 +1625,6 @@ class SodWindow(tk.Toplevel):
                                         bd=1, justify='left', font=('calibre', 16))
 
             label_name.grid(row=4, column=0, sticky='w')
-            # label_name.grid(row = 9, column = 0)
             button_voltar = tk.Button(window2, text='Close', font=('calibre', 20), command=window2.destroy, cursor="hand2")
             button_voltar.place(x=1050, y=600)
 
@@ -1700,7 +1641,6 @@ class SodWindow(tk.Toplevel):
 
             reg = LinearRegression()
 
-            # Create a label for x values
             x_label = tk.Label(window_prot3, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
 
@@ -1708,7 +1648,6 @@ class SodWindow(tk.Toplevel):
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
 
-            # Create a label for y values
             y_label = tk.Label(window_prot3, text="Absorbance (A.U) (Y)")
             y_label.grid(row=1, column=0, sticky="W")
 
@@ -1716,7 +1655,6 @@ class SodWindow(tk.Toplevel):
             for i, entry in enumerate(y_entries):
                 entry.grid(row=1, column=i + 1)
 
-            # These entries are filled automatically with the values in slope and intercept
             slo_entry = tk.Entry(window_prot3)
             slo_entry.grid(row=3, column=2, sticky="W")
 
@@ -1738,15 +1676,12 @@ class SodWindow(tk.Toplevel):
                     x = np.array(x).reshape(-1, 1)
                     y = np.array(y)
 
-                    # Train the model
                     reg.fit(x, y)
 
-                    # Get slope and intercept
                     slope = reg.coef_[0]
                     intercept = reg.intercept_
                     r_squared = reg.score(x, y)
 
-                    # Display slope and intercept values
                     slope_value_label.config(text=str(slope))
                     intercept_value_label.config(text=str(intercept))
 
@@ -1756,7 +1691,6 @@ class SodWindow(tk.Toplevel):
                     int_entry.delete(0, 'end')
                     int_entry.insert(0, str(intercept))
 
-                    # Plot the x, y plot
                     plt.scatter(x, y)
                     plt.plot(x, reg.predict(x), color='Red')
                     plt.xlabel("Protein Concentration (mg/mL)")
@@ -1767,26 +1701,20 @@ class SodWindow(tk.Toplevel):
                     plt.show()
 
                 else:
-                    # Show an error message if x and y are empty
                     messagebox.showerror("Error", "Did you forget the numbers? Decimals must be separated by dot! Do not use comma.")
 
-            # Create a button to trigger calculation and plot
             calculate_button = tk.Button(window_prot3, text="Calculate", command=calculate)
             calculate_button.grid(row=2, column=1, pady=10)
 
-            # Create a label for slope
             slope_label = tk.Label(window_prot3, text="Slope:")
             slope_label.grid(row=3, column=0, sticky="W")
 
-            # Create a label to display slope value
             slope_value_label = tk.Label(window_prot3)
             slope_value_label.grid(row=3, column=1)
 
-            # Create a label for intercept
             intercept_label = tk.Label(window_prot3, text="Intercept:")
             intercept_label.grid(row=4, column=0, sticky="W")
 
-            # Create a label to display intercept value
             intercept_value_label = tk.Label(window_prot3)
             intercept_value_label.grid(row=4, column=1)
 
@@ -1796,7 +1724,6 @@ class SodWindow(tk.Toplevel):
             sample_entry = tk.Entry(window_prot3)
             sample_entry.grid(row=4, column=4, sticky="W")
 
-            # Function to make calculation and plot
             def sample():
                 first = float(sample_entry.get()) - float(int_entry.get())
                 second = float(slo_entry.get())
@@ -1825,5 +1752,6 @@ class SodWindow(tk.Toplevel):
 if __name__ == "__main__":
     root = MainWindow()
     root.mainloop()
+
 
 
