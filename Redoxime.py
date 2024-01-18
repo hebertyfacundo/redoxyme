@@ -5,32 +5,29 @@ import math
 import openpyxl
 from openpyxl import Workbook
 import pandas as pd
-import tkinter.filedialog as filedialog  #importing the filedialog module from tkinter
+import tkinter.filedialog as filedialog
 from tkinter import messagebox
 from sklearn.linear_model import LinearRegression
-import os                               # importing the os module
-import shutil                           # importing the shutil module
+import os
+import shutil
 import hashlib
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
+import time
 from PIL import Image, ImageTk
-
+import clipboard
+import warnings
 
 class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.wm_title("Redoxyme - Redox Enzyme Activity Calculator ")
+        self.wm_title("Redoxyme - Redox Enzyme Activity Calculator")
         self.geometry("1200x600+80+30")
         self.resizable(False,False)
-        #self.wm_attributes('-toolwindow', 'True')
-        #create Icon
-        #self.iconbitmap('Redoximeicon.ico')
-        # create icon
-        icon_path = 'Redoxime icon.bmp'
+        icon_path = 'Icon Art.png'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
-
 
         self.button1 = tk.Button(self, text="Catalase", command=self.open_catalase_window,
                                  width=15, height=2, bg="light blue", cursor="hand2", font=("TkDefaultFont", 20, "bold"))
@@ -44,7 +41,6 @@ class MainWindow(tk.Tk):
                                  width=25, height=2, bg=("#33CC66"), cursor="hand2",
                                  font=("TkDefaultFont", 20, "bold"))
         self.button3.grid(row = 10, column = 6, columnspan = 3, padx = 5, pady = 15)
-
 
         ##load image
         __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -78,10 +74,9 @@ class CatalaseWindow(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
         self.title("Catalase Activity Calculator")
-        self.geometry("1300x600+20+100")
-        self.resizable(False, False)
-        self.configure(background='black')
-        icon_path = 'Redoxime icon.bmp'
+        self.geometry("1950x820")
+        self.configure(background='#EFFFFE')
+        icon_path = 'Icon Art.png'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -107,19 +102,21 @@ class CatalaseWindow(tk.Toplevel):
             print(output)
             output = round(output, 4)
             Output_label.config(text=str(output))
+            # Copy the output value to the clipboard
+            clipboard.copy(output)
 
         # Output_label.config(text = str(output))
-        Absorbance0entry = tk.Entry(frame1, width=12, textvariable=Absorbance0)
+        Absorbance0entry = tk.Entry(frame1, width=12, text = Absorbance0)
         Absorbance60entry = tk.Entry(frame1, width=12, textvariable=Absorbance60)
         Reaction_volumeentry = tk.Entry(frame1, width=12, textvariable=Reaction_volume)
         Sample_volumeentry = tk.Entry(frame1, width=12, textvariable=Sample_volume)
         mgprotentry = tk.Entry(frame1, width=12, textvariable=mgprot)
 
-        Absorbance0_label = tk.Label(frame1, text='       Absorbance0', font=('calibre', 20))
-        Absorbance60_label = tk.Label(frame1, text='     Absorbance60', font=('calibre', 20))
+        Absorbance0_label = tk.Label(frame1, text = '  Absorbance 0 sample', font=('calibre', 20))
+        Absorbance60_label = tk.Label(frame1, text='   Absorbance 60 sample', font=('calibre', 20))
         Reaction_volume_label = tk.Label(frame1, text=' Reaction Volume', font=('calibre', 20))
         Sample_volume_label = tk.Label(frame1, text='   Sample Volume', font=('calibre', 20))
-        mgprotentry_label = tk.Label(frame1, text='Sample (mg Protein/mL)', font=('calibre', 16))
+        mgprotentry_label = tk.Label(frame1, text='Sample Protein (mg/mL)', font=('calibre', 20))
         Output_label = tk.Label(frame1, text='', font=('calibre', 10))
         Result_label = tk.Label(frame1, text='  Activity: U/mg Protein', font=('calibre', 15), bg=("dark gray"))
 
@@ -303,73 +300,33 @@ class CatalaseWindow(tk.Toplevel):
         frame3.pack(padx=10, pady=20)
         frame3.place(relx=0.2, rely=0.95, anchor='sw')
 
-
-        def save_member():
-            file_name = "Catalaseactivity_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".xlsx"
-            # file = openpyxl.load_workbook(file_name)
-            file = openpyxl.Workbook()
-            sheet = file.active
-
-            rows = 7
-            cols = 6
-            for row in range(rows):
-                for col in range(cols):
-                    i = row * cols + col
-                    sheet.cell(column=col + 2, row=row + 3, value=widgets[i].get())
-
-            # xlfile=pd.read_excel(file_name, sheet_name='Sheet')
-
-            file.save(file_name)
-            file.close()
-
-        save_button = tk.Button(frame3, text='Save', font=("Arial", "12"),
-                                width=15, bg="gray", fg="#000000", activebackground="#286F63",
-                                activeforeground="#D0FEF7", command=save_member, cursor="hand2")
-        save_button.grid(row=1, column=1)
-
-        frame4 = tk.LabelFrame(self, text='')
-        frame4.pack(padx=10, pady=20)
-        frame4.place(relx=0.42, rely=0.95, anchor='sw')
-
-        def clear():
-
-            result = messagebox.askyesno("Save Changes",
-                                         "ARE YOU SURE YOU WANT TO CLEAR? That will erase all unsaved data! ")
-            if result == True:
-                for widget in widgets:
-                    if isinstance(widget, tk.Entry):
-                        widget.delete(0, 300)
-                    elif isinstance(widget, tk.ttk.Combobox):
-                        widget.set("")
-
-        clear_button = tk.Button(frame4, text='Clear', font=("Arial", "12"),
-                                 width=16, bg="gray", fg="#000000", activebackground="#286F63",
-                                 activeforeground="#D0FEF7", command=clear)
-        clear_button.grid(row=2, column=4, columnspan=2)
-
-        frame5 = tk.LabelFrame(self, text='')
-        frame5.pack(padx=5, pady=5)
-        frame5.place(relx=0.3, rely=0.95, anchor='sw')
-
-        def openFile():
-            # selecting the file using the askopenfilename() method of filedialog
-            the_file = filedialog.askopenfilename(title="Select the updated file", filetypes=[("All files", "*.*")])
-            if the_file:
-                print(f"Selected file: {the_file}")
-                # opening a file using the startfile() method of the os module
-                try:
-                    os.startfile(os.path.abspath(the_file))
-                except Exception as e:
-                    print(f"Error opening file: {e}")
+        def open_excel():
+            # Open file dialog
+            file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
+                                                   filetypes=(("Excel files", "*.xlsx"), ("all files", "*.*")))
+            if file_path.endswith(".xlsx"):
+                engine = 'openpyxl'
+            elif file_path.endswith(".xls"):
+                engine = 'xlrd'
             else:
-                self.state("iconic")
-        open_button = tk.Button(frame5, text="Open File", font=("Arial", "12"),
-                                width=18, bg="gray", fg="#000000", activebackground="#286F63",
-                                activeforeground="#D0FEF7", command=openFile, cursor="hand2")
-        open_button.grid(row=2, column=2)
+                raise ValueError("Invalid file extension")
+
+            data = pd.read_excel(file_path, engine=engine)
+
+            # Plot xy graphic using the first and second columns (A and B)
+            plt.plot(data.iloc[:, 0], data.iloc[:, 1])
+            plt.xlabel('Time (Secs)')
+            plt.ylabel('Absorbance (A.U.)')
+            plt.ion()
+            plt.show()
+
+        open_excel_button = tk.Button(frame3, text='Graph XY Excel', font=("Arial", "12"),
+                                      width=16, bg="#04D4ED", fg="#000000", activebackground="#286F63",
+                                      activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
+        open_excel_button.grid(row=1, column=1)
 
         def plot():
-
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
             group1 = [float(entry.get()) if entry.get() else None for entry in
                       [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
                        frame2_sampleentry25, frame2_sampleentry31]]
@@ -396,20 +353,19 @@ class CatalaseWindow(tk.Toplevel):
 
             def stddev(data):
                 n = len(data)
-                mean = sum(data) / n
-                variance = sum((x - mean) ** 2 for x in data) / (n - 1)
+                if n == 0:
+                    return np.nan  # Return NaN for standard deviation if the group is empty
+                mean_value = sum(data) / n
+                variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
                 return np.sqrt(variance)
 
             group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
             group1_mean = np.mean(group1_filtered)
             group1_sd = stddev(group1_filtered)
 
-            #print(f"Mean: {group1_mean}, Standard Deviation: {group1_sd}")
-
             group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
             group2_mean = np.mean(group2_filtered)
             group2_sd = stddev(group2_filtered)
-
 
             group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
             group3_mean = np.mean(group3_filtered)
@@ -430,9 +386,7 @@ class CatalaseWindow(tk.Toplevel):
             # Generate the plot
             fig, ax = plt.subplots()
 
-            # ax.bar(0, group1_mean, yerr=group1_se, ecolor='red', capsize=5)
-
-            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, ecolor='red', capsize=5)
+            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
             bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
             bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
             bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
@@ -448,65 +402,95 @@ class CatalaseWindow(tk.Toplevel):
             plt.show()
 
         # Create the button
-        plot_button = tk.Button(frame4, text='Plot', font=("Arial", "12"),
-                                width=16, bg="gray", fg="#000000", activebackground="#286F63",
+        plot_button = tk.Button(frame3, text='Plot', font=("Arial", "12"),
+                                width=16, bg="#04D4ED", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
-        plot_button.grid(row=2, column=10, columnspan=2)
+        plot_button.grid(row=1, column=2)
+        warnings.resetwarnings()
 
+        def clear():
 
-        def open_excel():
-            # Open file dialog
-            file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
-                                                   filetypes=(("all files", "*.*"), ("Excel files")))
-            if file_path.endswith(".xlsx"):
-                engine = 'openpyxl'
-            elif file_path.endswith(".xls"):
-                engine = 'xlrd'
+                result = messagebox.askyesno("Save Changes",
+                                             "ARE YOU SURE YOU WANT TO CLEAR? That will erase all unsaved data! ")
+                if result == True:
+                    for widget in widgets:
+                        if isinstance(widget, tk.Entry):
+                            widget.delete(0, 300)
+                        elif isinstance(widget, tk.ttk.Combobox):
+                            widget.set("")
+
+        clear_button = tk.Button(frame3, text='Clear', font=("Arial", "12"),
+                                 width=16, bg="#04D4ED", fg="#000000", activebackground="#286F63",
+                                 activeforeground="#D0FEF7", command=clear)
+        clear_button.grid(row=1, column=3)
+
+        def save_member():
+            file_name = "Catalaseactivity_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".xlsx"
+            # file = openpyxl.load_workbook(file_name)
+            file = openpyxl.Workbook()
+            sheet = file.active
+
+            rows = 7
+            cols = 6
+            for row in range(rows):
+                for col in range(cols):
+                    i = row * cols + col
+                    sheet.cell(column=col + 2, row=row + 3, value=widgets[i].get())
+
+            # xlfile=pd.read_excel(file_name, sheet_name='Sheet')
+
+            file.save(file_name)
+            file.close()
+
+        save_button = tk.Button(frame3, text='Save', font=("Arial", "12"),
+                                width=15, bg="#04D4ED", fg="#000000", activebackground="#286F63",
+                                activeforeground="#D0FEF7", command=save_member, cursor="hand2")
+        save_button.grid(row= 1, column = 4)
+
+        def openFile():
+            # selecting the file using the askopenfilename() method of filedialog
+            the_file = filedialog.askopenfilename(title="Select the updated file", filetypes=[("All files", "*.*")])
+            if the_file:
+                print(f"Selected file: {the_file}")
+                # opening a file using the startfile() method of the os module
+                try:
+                    os.startfile(os.path.abspath(the_file))
+                except Exception as e:
+                    print(f"Error opening file: {e}")
             else:
-                raise ValueError("Invalid file extension")
+                self.state("iconic")
+        open_button = tk.Button(frame3, text="Open File", font=("Arial", "12"),
+                                width=18, bg="#04D4ED", fg="#000000", activebackground="#286F63",
+                                activeforeground="#D0FEF7", command=openFile, cursor="hand2")
+        open_button.grid(row= 1, column = 5)
 
-            data = pd.read_excel(file_path, engine=engine)
-
-            # Read values from excel file
-            #data = pd.read_excel(file_path)
-
-            # Plot xy graphic
-            plt.plot(data['x'], data['y'])
-            plt.xlabel('Time (Secs)')
-            plt.ylabel('Absorbance (A.U.)')
-            plt.ion()
-            plt.show()
-
-        open_excel_button = tk.Button(frame4, text='Graph XY Excel', font=("Arial", "12"),
-                                      width=16, bg="gray", fg="#000000", activebackground="#286F63",
-                                      activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
-        open_excel_button.grid(row=2, column=14, columnspan=2)
 
         def open_window():
             window2 = tk.Toplevel()
             window2.title('Instructions')
             window2.geometry('6000x3000')
-            icon_path = 'Redoxime icon.bmp'
+            icon_path = 'Icon Art.png'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window2.iconphoto(False, icon)
 
             label_name = tk.Label(window2,
-                                  text='Catalase assay conducted as described in Nat Protoc. 2010 ; 5(1): 51–66. doi:10.1038/nprot.2009.197.\n'
+                                  text='Catalase assay conducted as described in Author et al. Journal Page Vol Year.\n'
                                        '\n'
-                                       'Absorbance0 → initial absorbance of H2O2, which should be close to 0.5. \n'
-                                       'Absorbance60 → absorbance at 60 seconds. \n'
+                                       'Absorbance 0 sample → initial absorbance of H2O2, which should be close to 0.5. \n'
+                                       'Absorbance 60 sample → absorbance at 60 seconds. \n'
                                        'Reaction Volume → total volume in the cuvette. \n'
                                        'Samples Volume → volume of samples in the cuvette. \n'
                                        'mg protein/mL → protein concentration of the original sample.\n'
                                        '\n'
                                        'Formula:\n'
-                                       'U = (1/60) x ln (Absorbance0/Absorbance60)\n'
-                                       'U/mL = U x (Reaction volume/Sample volume) \n'
+                                       'U = (1/60) x ln (Absorbance 0 sample/Absorbance 60 sample)\n'
+                                       'U total/mL = U x (Reaction volume/Sample volume) \n'
                                        'U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL) \n'
-                                       'Results are in U/mg protein or mU/mg protein. All experiments are conducted at 240 nm.\n'
+                                       'Results are in U/mg protein. All experiments are conducted at 240 nm.\n'
+                                       'The result is automatically copied to clipboard so the user may paste in the table provided or in another software\n'
                                        'One unit will decompose 1.0 μmol of H2O2 per min at pH 7.0 at 25 °C\n'
                                        'Users are expected to enter the data in the table and choose or enter the names or codes of the samples.\n'
-                                       'Each cell in the table can accept numbers, letters, or symbols.\n'
+                                       'Each cell in the table can accept numbers, letters, or symbols. The plot function will not work with letters or symbols\n'
                                        '\n'
                                        'When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXIME.exe file. \n'
                                        'The file will be saved in Excel format (named "catalaseactivity year-month-day hour-minute-second.xlsx"). The user should save it in a different folder.\n'
@@ -516,7 +500,7 @@ class CatalaseWindow(tk.Toplevel):
                                        'The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. \n'
                                        '\n'
                                        'The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file. \n'
-                                       '\n',
+                                       '\nContact email: heberty.facundo@gmail.com',
                                   bd=1, justify='left', font=('calibre', 16))
 
             label_name.grid(row=4, column=0, sticky='w')
@@ -531,7 +515,7 @@ class CatalaseWindow(tk.Toplevel):
             window_prot1 = tk.Toplevel()
             window_prot1.title('Protein')
             window_prot1.geometry('1200x300')
-            icon_path = 'Redoxime icon.bmp'
+            icon_path = 'Icon Art.png'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window_prot1.iconphoto(False, icon)
 
@@ -541,8 +525,7 @@ class CatalaseWindow(tk.Toplevel):
             # Create a label for x values
             x_label = tk.Label(window_prot1, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
-
-            # Create 10 entry boxes for x values
+           
             x_entries = [tk.Entry(window_prot1) for i in range(7)]
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
@@ -608,11 +591,11 @@ class CatalaseWindow(tk.Toplevel):
 
                 else:
                     # Show an error message if x and y are empty
-                    messagebox.askyesno("Error", "Did you forget the numbers? You are such a GENIUS!")
+                    messagebox.showerror("Error", "Did you forget the numbers? Decimals must be separated by dot! Do not use comma.")
 
             # Create a button to trigger calculation and plot
             calculate_button = tk.Button(window_prot1, text="Calculate", command=calculate)
-            calculate_button.grid(row=2, column=1, columnspan=11, pady=10)
+            calculate_button.grid(row=2, column=1, pady=10)
 
             # Create a label for slope
             slope_label = tk.Label(window_prot1, text="Slope:")
@@ -630,6 +613,9 @@ class CatalaseWindow(tk.Toplevel):
             intercept_value_label = tk.Label(window_prot1)
             intercept_value_label.grid(row=4, column=1)
 
+            slope_label = tk.Label(window_prot1, text="Sample Absorbance")
+            slope_label.grid(row=3, column=4, sticky="W")
+
             sample_entry = tk.Entry(window_prot1)
             sample_entry.grid(row=4, column=4, sticky="W")
 
@@ -639,7 +625,9 @@ class CatalaseWindow(tk.Toplevel):
                 second = float(slo_entry.get())
                 output = first / second
                 print(output)
+                output = round(output, 4)
                 output_label.config(text=str(output))
+                clipboard.copy(output)
 
             output_label = tk.Label(window_prot1, text='', font=('calibre', 10))
             output_label.grid(row=8, column=5, sticky="W")
@@ -652,15 +640,16 @@ class CatalaseWindow(tk.Toplevel):
             button_voltar = tk.Button(window_prot1, text='Close', font=('calibre', 20), command=window_prot1.destroy, cursor="hand2")
             button_voltar.place(x=1050, y=600)
 
-        Window_prot1_button1 = tk.Button(self, text='Calculate Protein', command=window_prot1, cursor="hand2")
+        Window_prot1_button1 = tk.Button(self, text='Protein', command=window_prot1, cursor="hand2")
         Window_prot1_button1.grid(row=3, column=3)
 
 class GpxWindow(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
         self.title("Glutathione Peroxidase Activity Calculator")
-        self.geometry("2000x700+1+1")
-        icon_path = 'Redoxime icon.bmp'
+        self.geometry("2000x820")
+        self.configure(background='#FCEDEA')
+        icon_path = 'Icon Art.png'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -681,27 +670,18 @@ class GpxWindow(tk.Toplevel):
 
         def answer():
             DeltAbs_sample = float(Abs0sample.get()) - float(Abs60sample.get())
-            print(DeltAbs_sample)
             DeltAbs_blank = float(Abs0blank.get()) - float(Abs60blank.get())
-            print(DeltAbs_blank)
             Delta_delta = (DeltAbs_sample-DeltAbs_blank)
-            print(Delta_delta)
             GPX_1 = Delta_delta/float(Coef_Ext.get())
-            print(GPX_1)
             Coef_1 = float(Reaction_volume.get()) / float(Sample_volume.get())
-            print(Coef_1)
             Coef_2 = Coef_1*float(Dilutionfactor.get())*2
-            print(Coef_2)
             GPX_2 = GPX_1*Coef_2
-            print(GPX_2)
             mgprotsample = float(mgprot.get())
             output = GPX_2/mgprotsample
-
-            print(output)
             output = round(output, 4)
             Output_label.config(text=str(output))
-            #Output_label.config(text = str(output))
 
+            clipboard.copy(output)
 
 
         Abs0sampleentry = tk.Entry(frame1, width=12, textvariable = Abs0sample)
@@ -896,10 +876,147 @@ class GpxWindow(tk.Toplevel):
         frame3.pack(padx=10, pady=20)
         frame3.place(relx=0.2, rely=0.95, anchor='sw')
 
+        def open_excel():
+            # Open file dialog
+            file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
+                                                   filetypes=(("Excel files", "*.xlsx"), ("all files", "*.*")))
+            if file_path.endswith(".xlsx"):
+                engine = 'openpyxl'
+            elif file_path.endswith(".xls"):
+                engine = 'xlrd'
+            else:
+                raise ValueError("Invalid file extension")
+
+            data = pd.read_excel(file_path, engine=engine)
+
+            # Plot xy graphic using the first and second columns (A and B)
+            plt.plot(data.iloc[:, 0], data.iloc[:, 1])
+            plt.xlabel('Time (Secs)')
+            plt.ylabel('Absorbance (A.U.)')
+            plt.ion()
+            plt.show()
+
+        open_excel_button = tk.Button(frame3, text='Graph XY Excel', font=("Arial", "12"),
+                                      width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
+                                      activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
+        open_excel_button.grid(row=1, column=1)
+
+        def plot():
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
+            group1 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
+                       frame2_sampleentry25, frame2_sampleentry31]]
+
+            group2 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry2, frame2_sampleentry8, frame2_sampleentry14, frame2_sampleentry20,
+                       frame2_sampleentry26, frame2_sampleentry32]]
+
+            group3 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry3, frame2_sampleentry9, frame2_sampleentry15, frame2_sampleentry21,
+                       frame2_sampleentry27, frame2_sampleentry33]]
+
+            group4 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry4, frame2_sampleentry10, frame2_sampleentry16, frame2_sampleentry22,
+                       frame2_sampleentry28, frame2_sampleentry34]]
+
+            group5 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry5, frame2_sampleentry11, frame2_sampleentry17, frame2_sampleentry23,
+                       frame2_sampleentry29, frame2_sampleentry35]]
+
+            group6 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24,
+                       frame2_sampleentry30, frame2_sampleentry36]]
+
+            def stddev(data):
+                n = len(data)
+                if n == 0:
+                    return np.nan  # Return NaN for standard deviation if the group is empty
+                mean_value = sum(data) / n
+                variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
+                return np.sqrt(variance)
+
+            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
+            group1_mean = np.mean(group1_filtered)
+            group1_sd = stddev(group1_filtered)
+
+            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
+            group2_mean = np.mean(group2_filtered)
+            group2_sd = stddev(group2_filtered)
+
+            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
+            group3_mean = np.mean(group3_filtered)
+            group3_sd = stddev(group3_filtered)
+
+            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
+            group4_mean = np.mean(group4_filtered)
+            group4_sd = stddev(group4_filtered)
+
+            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
+            group5_mean = np.mean(group5_filtered)
+            group5_sd = stddev(group5_filtered)
+
+            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
+            group6_mean = np.mean(group6_filtered)
+            group6_sd = stddev(group6_filtered)
+
+            # Generate the plot
+            fig, ax = plt.subplots()
+
+            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
+            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
+            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
+            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
+            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label=Combobox_select_type5.get(), ecolor='red', capsize=5)
+            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label=Combobox_select_type6.get(), ecolor='red', capsize=5)
+
+            ax.set_ylabel('Catalase Activity (U/mg protein)')
+            ax.set_xticks([1, 2, 3, 4, 5, 6])
+            ax.set_xticklabels(
+                [(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()),
+                 (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
+
+            plt.show()
+
+        # Create the button
+        plot_button = tk.Button(frame3, text='Plot', font=("Arial", "12"),
+                                width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
+                                activeforeground="#D0FEF7", command=plot, cursor="hand2")
+        plot_button.grid(row=1, column=2)
+        warnings.resetwarnings()
+
+
+        def clear():
+            clear_combobox = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3,
+                              Combobox_select_type4, Combobox_select_type5, Combobox_select_type6,
+                              frame2_sampleentry1, frame2_sampleentry2, frame2_sampleentry3, frame2_sampleentry4,
+                              frame2_sampleentry5, frame2_sampleentry6, frame2_sampleentry7, frame2_sampleentry8,
+                              frame2_sampleentry9, frame2_sampleentry10, frame2_sampleentry11, frame2_sampleentry12,
+                              frame2_sampleentry13, frame2_sampleentry14, frame2_sampleentry15, frame2_sampleentry16,
+                              frame2_sampleentry17, frame2_sampleentry18, frame2_sampleentry19, frame2_sampleentry20,
+                              frame2_sampleentry21, frame2_sampleentry22, frame2_sampleentry23, frame2_sampleentry24,
+                              frame2_sampleentry25, frame2_sampleentry26, frame2_sampleentry27, frame2_sampleentry28,
+                              frame2_sampleentry29, frame2_sampleentry30, frame2_sampleentry31, frame2_sampleentry32,
+                              frame2_sampleentry33, frame2_sampleentry34, frame2_sampleentry35, frame2_sampleentry36]
+
+            result = messagebox.askyesno("Save Changes",
+                                         "ARE YOU SURE YOU WANT TO CLEAR? That will erase all unsaved data! ")
+            if result == True:
+                for widget in clear_combobox:
+                    if isinstance(widget, tk.Entry):
+                        widget.delete(0, 300)
+                    elif isinstance(widget, tk.ttk.Combobox):
+                        widget.set("")
+
+
+        clear_button = tk.Button(frame3, text='Clear', font=("Arial", "12"),
+                                 width=18, bg="#d17486", fg="#000000", activebackground="#286F63",
+                                 activeforeground="#D0FEF7", command=clear)
+        clear_button.grid(row=1, column=3)
+
 
         def save_member():
-
-            widgets = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3, Combobox_select_type4, Combobox_select_type5, Combobox_select_type6,
+            widgets = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3, Combobox_select_type4,
+                       Combobox_select_type5, Combobox_select_type6,
                        frame2_sampleentry1, frame2_sampleentry2, frame2_sampleentry3, frame2_sampleentry4, frame2_sampleentry5,
                        frame2_sampleentry6, frame2_sampleentry7, frame2_sampleentry8, frame2_sampleentry9, frame2_sampleentry10,
                        frame2_sampleentry11, frame2_sampleentry12, frame2_sampleentry13, frame2_sampleentry14,
@@ -924,48 +1041,12 @@ class GpxWindow(tk.Toplevel):
             file.save(file_name)
             file.close()
 
-            #xlfile = pd.read_excel(file_name, sheet_name='Sheet')
 
+        save_button = tk.Button(frame3, text='Save', font=("Arial", "12"),
+                                width=18, bg="#d17486", fg="#000000", activebackground="#286F63",
+                                activeforeground="#D0FEF7", command=save_member, cursor="hand2")
+        save_button.grid(row=1, column=4)
 
-        save_button = tk.Button(frame3, text='Save', font = ("Arial", "12"),
-           width = 18, bg = "#d17486", fg = "#000000", activebackground = "#286F63",
-           activeforeground = "#D0FEF7", command=save_member, cursor="hand2")
-        save_button.grid(row= 1, column = 1)
-
-        frame4 = tk.LabelFrame(self, text='')
-        frame4.pack(padx=10, pady=20)
-        frame4.place(relx=0.42, rely=0.95, anchor='sw')
-
-        def clear():
-            clear_combobox = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3,
-                              Combobox_select_type4, Combobox_select_type5, Combobox_select_type6,
-                              frame2_sampleentry1, frame2_sampleentry2, frame2_sampleentry3, frame2_sampleentry4,
-                              frame2_sampleentry5, frame2_sampleentry6, frame2_sampleentry7, frame2_sampleentry8,
-                              frame2_sampleentry9, frame2_sampleentry10, frame2_sampleentry11, frame2_sampleentry12,
-                              frame2_sampleentry13, frame2_sampleentry14, frame2_sampleentry15, frame2_sampleentry16,
-                              frame2_sampleentry17, frame2_sampleentry18, frame2_sampleentry19, frame2_sampleentry20,
-                              frame2_sampleentry21, frame2_sampleentry22, frame2_sampleentry23, frame2_sampleentry24,
-                              frame2_sampleentry25, frame2_sampleentry26, frame2_sampleentry27, frame2_sampleentry28,
-                              frame2_sampleentry29, frame2_sampleentry30, frame2_sampleentry31, frame2_sampleentry32,
-                              frame2_sampleentry33, frame2_sampleentry34, frame2_sampleentry35, frame2_sampleentry36]
-
-            result = messagebox.askyesno("Save Changes",
-                                         "ARE YOU SURE YOU WANT TO CLEAR? That will erase all unsaved data! ")
-            if result == True:
-                for widget in clear_combobox:
-                    if isinstance(widget, tk.Entry):
-                        widget.delete(0, 300)
-                    elif isinstance(widget, tk.ttk.Combobox):
-                        widget.set("")
-
-        clear_button = tk.Button(frame4, text='Clear', font = ("Arial", "12"),
-           width = 18,  bg = "#d17486", fg = "#000000", activebackground = "#286F63",
-           activeforeground = "#D0FEF7", command=clear)
-        clear_button.grid(row=2, column=4, columnspan=2)
-
-        frame5 = tk.LabelFrame(self, text='')
-        frame5.pack(padx=5, pady=5)
-        frame5.place(relx=0.3, rely=0.95, anchor='sw')
 
         def openFile():
             # selecting the file using the askopenfilename() method of filedialog
@@ -980,136 +1061,40 @@ class GpxWindow(tk.Toplevel):
             else:
                 self.state("iconic")
 
-        open_button = tk.Button( frame5, text = "Open File", font = ("Arial", "12"),
-           width = 18, bg = "#d17486", fg = "#000000", activebackground = "#286F63",
-           activeforeground = "#D0FEF7", command = openFile, cursor="hand2")
-        open_button.grid(row= 2, column = 2)
 
-        def plot():
-
-            group1 = [float(entry.get()) if entry.get() else None for entry in [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19, frame2_sampleentry25, frame2_sampleentry31]]
-
-            group2 = [float(entry.get()) if entry.get() else None for entry in [frame2_sampleentry2, frame2_sampleentry8, frame2_sampleentry14, frame2_sampleentry20, frame2_sampleentry26, frame2_sampleentry32]]
-
-            group3 = [float(entry.get()) if entry.get() else None for entry in [frame2_sampleentry3, frame2_sampleentry9, frame2_sampleentry15, frame2_sampleentry21, frame2_sampleentry27, frame2_sampleentry33]]
-
-            group4 = [float(entry.get()) if entry.get() else None for entry in [frame2_sampleentry4, frame2_sampleentry10, frame2_sampleentry16, frame2_sampleentry22, frame2_sampleentry28, frame2_sampleentry34]]
-
-            group5 = [float(entry.get()) if entry.get() else None for entry in [frame2_sampleentry5, frame2_sampleentry11, frame2_sampleentry17, frame2_sampleentry23, frame2_sampleentry29, frame2_sampleentry35]]
-
-            group6 = [float(entry.get()) if entry.get() else None for entry in [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24, frame2_sampleentry30, frame2_sampleentry36]]
-
-            def stddev(data):
-                n = len(data)
-                mean = sum(data) / n
-                variance = sum((x - mean) ** 2 for x in data) / (n - 1)
-                return np.sqrt(variance)
-
-            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
-            group1_mean = np.mean(group1_filtered)
-            group1_sd = stddev(group1_filtered)
-
-            # print(f"Mean: {group1_mean}, Standard Deviation: {group1_sd}")
-            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
-            group2_mean = np.mean(group2_filtered)
-            group2_sd = stddev(group2_filtered)
-
-            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
-            group3_mean = np.mean(group3_filtered)
-            group3_sd = stddev(group3_filtered)
-
-            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
-            group4_mean = np.mean(group4_filtered)
-            group4_sd = stddev(group4_filtered)
-
-            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
-            group5_mean = np.mean(group5_filtered)
-            group5_sd = stddev(group5_filtered)
-
-            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
-            group6_mean = np.mean(group6_filtered)
-            group6_sd = stddev(group6_filtered)
-
-            # Generate the plot
-            fig, ax = plt.subplots()
-
-            #ax.bar(0, group1_mean, yerr=group1_se, ecolor='red', capsize=5)
-
-            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, ecolor='red', capsize=5)
-            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label= Combobox_select_type2.get(), ecolor='red', capsize=5)
-            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label= Combobox_select_type3.get(), ecolor='red', capsize=5)
-            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label= Combobox_select_type4.get(), ecolor='red', capsize=5)
-            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label= Combobox_select_type5.get(), ecolor='red', capsize=5)
-            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label= Combobox_select_type6.get(), ecolor='red', capsize=5)
-
-            ax.set_ylabel('Glutathione Peroxidase Activity (U/mg protein)')
-            ax.set_xticks([1, 2, 3, 4, 5, 6])
-            ax.set_xticklabels([(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()), (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
-
-            plt.show()
-
-        # Create the button
-        plot_button = tk.Button(frame4, text='Plot', font = ("Arial", "12"),
-           width = 16, bg = "#d17486", fg = "#000000", activebackground = "#286F63",
-           activeforeground = "#D0FEF7", command=plot, cursor="hand2")
-        plot_button.grid(row= 2, column = 10, columnspan=2)
-
-        def open_excel():
-            # Open file dialog
-            file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
-                                                   filetypes=(("all files", "*.*"), ("Excel files")))
-            if file_path.endswith(".xlsx"):
-                engine = 'openpyxl'
-            elif file_path.endswith(".xls"):
-                engine = 'xlrd'
-            else:
-                raise ValueError("Invalid file extension")
-
-            data = pd.read_excel(file_path, engine=engine)
-
-            # Read values from excel file
-            #data = pd.read_excel(file_path)
-
-            # Plot xy graphic
-            plt.plot(data['x'], data['y'])
-            plt.xlabel('Time (Secs)')
-            plt.ylabel('Absorbance (A.U.)')
-            plt.ion()
-            plt.show()
-
-        open_excel_button = tk.Button(frame4, text='Graph XY Excel', font=("Arial", "12"),
-                                      width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
-                                      activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
-        open_excel_button.grid(row=2, column=14, columnspan=2)
-
+        open_button = tk.Button(frame3, text="Open File", font=("Arial", "12"),
+                                width=18, bg="#d17486", fg="#000000", activebackground="#286F63",
+                                activeforeground="#D0FEF7", command=openFile, cursor="hand2")
+        open_button.grid(row=1, column=5)
         def open_window():
             window2 = tk.Toplevel()
             window2.title('Instructions')
             window2.geometry('6000x3000')
-            icon_path = 'Redoxime icon.bmp'
+            icon_path = 'Icon Art.png'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window2.iconphoto(False, icon)
 
-            label_name=tk.Label(window2, text='Glutathione Peroxidase assay conducted as described in Nat Protoc. 2010 ; 5(1): 51–66. doi:10.1038/nprot.2009.197.\n'
+            label_name=tk.Label(window2, text='Glutathione Peroxidase assay conducted as described in Author et al. Journal Page Vol Year.\n'
                                       '1 unit of GPx-1 is defined as the amount of enzyme necessary to catalyze the oxidation (by H2O2) \n'
                                       'of 1.0 micromole GSH to GSSG, per minute at 25 ºC, pH 7.0.\n'
-                                      'Absorbance0 Sample → initial absorbance of NAD(P)H. \n'
-                                      'Absorbance60 Sample → final absorbance. \n'
-                                      'Absorbance0 blank→ initial absorbance of NAD(P)H. \n'
-                                      'Absorbance60 blank→ final absorbance of NAD(P)H. \n'
-                                      'Reaction Volume → total volume in the cuvette. \n'                                        
-                                      'Samples Volume → volume of samples in the cuvette. \n'
-                                      'Dilution Factor → dilution of sample before adding to the cuvette. \n'
+                                      'Absorbance 0 Sample → initial absorbance of NAD(P)H \n'
+                                      'Absorbance 60 Sample → final absorbance \n'
+                                      'Absorbance 0 blank→ initial absorbance of NAD(P)H \n'
+                                      'Absorbance 60 blank→ final absorbance of NAD(P)H \n'
+                                      'Reaction Volume → total volume in the cuvette \n'                                        
+                                      'Samples Volume → volume of samples in the cuvette \n'
+                                      'Dilution Factor → dilution of sample before adding to the cuvette \n'
                                       'Coeficient extinction of NADPH at 340 nm at 1 cm pathlength is 6.22. If the pathlength is 0.5 consider 3.11 \n'
-                                      'mg protein/mL → protein concentration of the original sample.\n'
+                                      'mg protein/mL → protein concentration of the original sample\n'
                                       '\n'
                                       'U/mL = U x (Reaction volume/Sample volume) \n'
                                       'U/mg protein = (U total/mL)/(concentration of sample protein in mg/mL) \n'
                                       'Results are in U/mg protein or mU/mg protein. All experiments are conducted at 340 nm.\n'
                                               '\n' 
+                                      'The result is automatically copied to clipboard so the user may paste in the table provided or in another software.\n'
                                       'SAVING DATA:\n' 
                                       'Users are expected to enter the data in the table and choose or enter the names or codes of the samples.\n'
-                                      'Each cell in the table can accept numbers, letters, or symbols.\n'
+                                      'Each cell in the table can accept numbers, letters, or symbols. The plot function will not work with letters or symbols.\n'
                                       '\n'
                                       'When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXIME file. \n'
                                       'The file will be saved in Excel format (named "GPXactivity year-month-day hour-minute-second.xlsx"). \n'
@@ -1118,7 +1103,7 @@ class GpxWindow(tk.Toplevel):
                                       'The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. \n' 
                                       '\n'
                                       'The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file. \n'
-                                      '\n',
+                                      '\nContact email: heberty.facundo@gmail.com',
                              bd=1, justify='left', font=('calibre',14))
 
             label_name.grid(row=4, column=0, sticky='w')
@@ -1133,7 +1118,7 @@ class GpxWindow(tk.Toplevel):
             window_prot2 = tk.Toplevel()
             window_prot2.title('Protein')
             window_prot2.geometry('1200x300')
-            icon_path = 'Redoxime icon.bmp'
+            icon_path = 'Icon Art.png'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window_prot2.iconphoto(False, icon)
 
@@ -1144,7 +1129,6 @@ class GpxWindow(tk.Toplevel):
             x_label = tk.Label(window_prot2, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
 
-            # Create 10 entry boxes for x values
             x_entries = [tk.Entry(window_prot2) for i in range(7)]
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
@@ -1210,11 +1194,11 @@ class GpxWindow(tk.Toplevel):
 
                 else:
                     # Show an error message if x and y are empty
-                    messagebox.askyesno("Error", "Did you forget the numbers? You are such a GENIUS!")
+                    messagebox.showerror("Error", "Did you forget the numbers? Decimals must be separated by dot! Do not use comma.")
 
             # Create a button to trigger calculation and plot
             calculate_button = tk.Button(window_prot2, text="Calculate", command=calculate)
-            calculate_button.grid(row=2, column=1, columnspan=11, pady=10)
+            calculate_button.grid(row=2, column=1, pady=10)
 
             # Create a label for slope
             slope_label = tk.Label(window_prot2, text="Slope:")
@@ -1232,6 +1216,9 @@ class GpxWindow(tk.Toplevel):
             intercept_value_label = tk.Label(window_prot2)
             intercept_value_label.grid(row=4, column=1)
 
+            slope_label = tk.Label(window_prot2, text="Sample Absorbance")
+            slope_label.grid(row=3, column=4, sticky="W")
+
             sample_entry = tk.Entry(window_prot2)
             sample_entry.grid(row=4, column=4, sticky="W")
 
@@ -1241,7 +1228,10 @@ class GpxWindow(tk.Toplevel):
                 second = float(slo_entry.get())
                 output = first / second
                 print(output)
+                output = round(output, 4)
                 output_label.config(text=str(output))
+                clipboard.copy(output)
+
 
             output_label = tk.Label(window_prot2, text='', font=('calibre', 10))
             output_label.grid(row=8, column=5, sticky="W")
@@ -1254,15 +1244,16 @@ class GpxWindow(tk.Toplevel):
             button_voltar = tk.Button(window_prot2, text='Close', font=('calibre', 20), command=window_prot2.destroy, cursor="hand2")
             button_voltar.place(x=1050, y=600)
 
-        Window_prot2_button1 = tk.Button(self, text='Calculate Protein', command=window_prot2, cursor="hand2")
+        Window_prot2_button1 = tk.Button(self, text='Protein', command=window_prot2, cursor="hand2")
         Window_prot2_button1.grid(row=3, column=3)
 
 class SodWindow(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
         self.title("SOD Activity Calculator")
-        self.geometry("1300x600+20+30")
-        icon_path = 'Redoxime icon.bmp'
+        self.geometry("2000x820")
+        self.configure(background='#EEFBDC')
+        icon_path = 'Icon Art.png'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -1270,36 +1261,34 @@ class SodWindow(tk.Toplevel):
         frame1.pack(padx=1, pady=1)
         frame1.place(relx=0.5, rely=0.3, anchor='c')
 
-        AbsBlanc = tk.StringVar()
+        AbsBlank = tk.StringVar()
         AbsSample = tk.StringVar()
         Reaction_volume = tk.StringVar()
         Sample_volume = tk.StringVar()
         Dilution_factor =tk.StringVar()
         mgprot = tk.StringVar()
 
-        def answer(): #float(Abs0sample.get()) - float(Abs60sample.get())
-            RAbs = (float(AbsBlanc.get()) - float(AbsSample.get())) / float(AbsBlanc.get())
+        def answer():
+            RAbs = (float(AbsBlank.get()) - float(AbsSample.get())) / float(AbsBlank.get())
             Unit_Calc = RAbs / 0.5
             React_volume = float(Reaction_volume.get()) / float(Sample_volume.get())
             U =  Unit_Calc * React_volume
             U_mgprot = U / float(mgprot.get())
-
             output = U_mgprot * float(Dilution_factor.get())
-
-            print(output)
             output = round(output, 4)
             Output_label.config(text=str(output))
+            # Copy the output value to the clipboard
+            clipboard.copy(output)
 
-        # Output_label.config(text = str(output))
-        AbsBlancentry = tk.Entry(frame1, width=12, textvariable=AbsBlanc)
+        AbsBlankentry = tk.Entry(frame1, width=12, textvariable=AbsBlank)
         AbsSampleentry = tk.Entry(frame1, width=12, textvariable=AbsSample)
         Reaction_volumeentry = tk.Entry(frame1, width=12, textvariable=Reaction_volume)
         Sample_volumeentry = tk.Entry(frame1, width=12, textvariable=Sample_volume)
         mgprotentry = tk.Entry(frame1, width=12, textvariable=mgprot)
         Dilution_factorentry = tk.Entry(frame1, width=12, textvariable=Dilution_factor)
 
-        AbsBlanc_label = tk.Label(frame1, text='       AbsBlanc', font=('calibre', 20))
-        AbsSample_label = tk.Label(frame1, text='     AbsSample', font=('calibre', 20))
+        AbsBlank_label = tk.Label(frame1, text='Absorbance Blank', font=('calibre', 20))
+        AbsSample_label = tk.Label(frame1, text='Absorbance Sample', font=('calibre', 20))
         Reaction_volume_label = tk.Label(frame1, text=' Reaction Volume', font=('calibre', 20))
         Sample_volume_label = tk.Label(frame1, text='   Sample Volume', font=('calibre', 20))
         mgprotentry_label = tk.Label(frame1, text='     mg Protein/mL', font=('calibre', 20))
@@ -1307,8 +1296,8 @@ class SodWindow(tk.Toplevel):
         Output_label = tk.Label(frame1, text='', font=('calibre', 10))
         Result_label = tk.Label(frame1, text='  Activity: U/mg Protein', font=('calibre', 15), bg=("dark gray"))
 
-        AbsBlanc_label.grid(row=2, column=1)
-        AbsBlancentry.grid(row=2, column=2)
+        AbsBlank_label.grid(row=2, column=1)
+        AbsBlankentry.grid(row=2, column=2)
         AbsSample_label.grid(row=3, column=1)
         AbsSampleentry.grid(row=3, column=2)
         Reaction_volume_label.grid(row=4, column=1)
@@ -1470,7 +1459,143 @@ class SodWindow(tk.Toplevel):
         frame3.pack(padx=10, pady=20)
         frame3.place(relx=0.2, rely=0.95, anchor='sw')
 
+        def open_excel():
+            # Open file dialog
+            file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
+                                                   filetypes=(("Excel files", "*.xlsx"), ("all files", "*.*")))
+            if file_path.endswith(".xlsx"):
+                engine = 'openpyxl'
+            elif file_path.endswith(".xls"):
+                engine = 'xlrd'
+            else:
+                raise ValueError("Invalid file extension")
 
+            data = pd.read_excel(file_path, engine=engine)
+
+            # Plot xy graphic using the first and second columns (A and B)
+            plt.plot(data.iloc[:, 0], data.iloc[:, 1])
+            plt.xlabel('Time (Secs)')
+            plt.ylabel('Absorbance (A.U.)')
+            plt.ion()
+            plt.show()
+
+        open_excel_button = tk.Button(frame3, text='Graph XY Excel', font=("Arial", "12"),
+                                      width=16, bg="#99FA13", fg="#000000", activebackground="#286F63",
+                                      activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
+        open_excel_button.grid(row=1, column=1)
+
+        def plot():
+            warnings.filterwarnings("ignore", category=RuntimeWarning)
+            group1 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
+                       frame2_sampleentry25, frame2_sampleentry31]]
+
+            group2 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry2, frame2_sampleentry8, frame2_sampleentry14, frame2_sampleentry20,
+                       frame2_sampleentry26, frame2_sampleentry32]]
+
+            group3 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry3, frame2_sampleentry9, frame2_sampleentry15, frame2_sampleentry21,
+                       frame2_sampleentry27, frame2_sampleentry33]]
+
+            group4 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry4, frame2_sampleentry10, frame2_sampleentry16, frame2_sampleentry22,
+                       frame2_sampleentry28, frame2_sampleentry34]]
+
+            group5 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry5, frame2_sampleentry11, frame2_sampleentry17, frame2_sampleentry23,
+                       frame2_sampleentry29, frame2_sampleentry35]]
+
+            group6 = [float(entry.get()) if entry.get() else None for entry in
+                      [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24,
+                       frame2_sampleentry30, frame2_sampleentry36]]
+
+            def stddev(data):
+                n = len(data)
+                if n == 0:
+                    return np.nan  # Return not a number (NaN) for standard deviation if the group is empty
+                mean_value = sum(data) / n
+                variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
+                return np.sqrt(variance)
+
+            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
+            group1_mean = np.mean(group1_filtered)
+            group1_sd = stddev(group1_filtered)
+
+            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
+            group2_mean = np.mean(group2_filtered)
+            group2_sd = stddev(group2_filtered)
+
+            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
+            group3_mean = np.mean(group3_filtered)
+            group3_sd = stddev(group3_filtered)
+
+            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
+            group4_mean = np.mean(group4_filtered)
+            group4_sd = stddev(group4_filtered)
+
+            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
+            group5_mean = np.mean(group5_filtered)
+            group5_sd = stddev(group5_filtered)
+
+            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
+            group6_mean = np.mean(group6_filtered)
+            group6_sd = stddev(group6_filtered)
+
+            # Generate the plot
+            fig, ax = plt.subplots()
+
+            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
+            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
+            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
+            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
+            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label=Combobox_select_type5.get(), ecolor='red', capsize=5)
+            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label=Combobox_select_type6.get(), ecolor='red', capsize=5)
+
+
+
+            ax.set_ylabel('Catalase Activity (U/mg protein)')
+            ax.set_xticks([1, 2, 3, 4, 5, 6])
+            ax.set_xticklabels(
+                [(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()),
+                 (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
+
+            plt.show()
+
+        # Create the button
+        plot_button = tk.Button(frame3, text='Plot', font=("Arial", "12"),
+                                width=16, bg="#99FA13", fg="#000000", activebackground="#286F63",
+                                activeforeground="#D0FEF7", command=plot, cursor="hand2")
+        plot_button.grid(row=1, column=2)
+        warnings.resetwarnings()
+
+
+        def clear():
+            clear_combobox = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3,
+                              Combobox_select_type4, Combobox_select_type5, Combobox_select_type6,
+                              frame2_sampleentry1, frame2_sampleentry2, frame2_sampleentry3, frame2_sampleentry4,
+                              frame2_sampleentry5, frame2_sampleentry6, frame2_sampleentry7, frame2_sampleentry8,
+                              frame2_sampleentry9, frame2_sampleentry10, frame2_sampleentry11, frame2_sampleentry12,
+                              frame2_sampleentry13, frame2_sampleentry14, frame2_sampleentry15, frame2_sampleentry16,
+                              frame2_sampleentry17, frame2_sampleentry18, frame2_sampleentry19, frame2_sampleentry20,
+                              frame2_sampleentry21, frame2_sampleentry22, frame2_sampleentry23, frame2_sampleentry24,
+                              frame2_sampleentry25, frame2_sampleentry26, frame2_sampleentry27, frame2_sampleentry28,
+                              frame2_sampleentry29, frame2_sampleentry30, frame2_sampleentry31, frame2_sampleentry32,
+                              frame2_sampleentry33, frame2_sampleentry34, frame2_sampleentry35, frame2_sampleentry36]
+
+            result = messagebox.askyesno("Save Changes",
+                                         "ARE YOU SURE YOU WANT TO CLEAR? That will erase all unsaved data! ")
+            if result == True:
+                for widget in clear_combobox:
+                    if isinstance(widget, tk.Entry):
+                        widget.delete(0, 300)
+                    elif isinstance(widget, tk.ttk.Combobox):
+                        widget.set("")
+
+        clear_button = tk.Button(frame3, text='Clear', font=("Arial", "12"),
+                                 width=16, bg="#99FA13", fg="#000000", activebackground="#286F63",
+                                 activeforeground="#D0FEF7", command=clear)
+        clear_button.grid(row=1, column=3)
 
         def save_member():
             widgets = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3, Combobox_select_type4,
@@ -1502,44 +1627,9 @@ class SodWindow(tk.Toplevel):
             file.close()
 
         save_button = tk.Button(frame3, text='Save', font=("Arial", "12"),
-                                width=15, bg="#d17486", fg="#000000", activebackground="#286F63",
+                                width=15, bg="#99FA13", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=save_member, cursor="hand2")
-        save_button.grid(row=1, column=1)
-
-        frame4 = tk.LabelFrame(self, text='')
-        frame4.pack(padx=10, pady=20)
-        frame4.place(relx=0.42, rely=0.95, anchor='sw')
-
-        def clear():
-            clear_combobox = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3,
-                              Combobox_select_type4, Combobox_select_type5, Combobox_select_type6,
-                              frame2_sampleentry1, frame2_sampleentry2, frame2_sampleentry3, frame2_sampleentry4,
-                              frame2_sampleentry5, frame2_sampleentry6, frame2_sampleentry7, frame2_sampleentry8,
-                              frame2_sampleentry9, frame2_sampleentry10, frame2_sampleentry11, frame2_sampleentry12,
-                              frame2_sampleentry13, frame2_sampleentry14, frame2_sampleentry15, frame2_sampleentry16,
-                              frame2_sampleentry17, frame2_sampleentry18, frame2_sampleentry19, frame2_sampleentry20,
-                              frame2_sampleentry21, frame2_sampleentry22, frame2_sampleentry23, frame2_sampleentry24,
-                              frame2_sampleentry25, frame2_sampleentry26, frame2_sampleentry27, frame2_sampleentry28,
-                              frame2_sampleentry29, frame2_sampleentry30, frame2_sampleentry31, frame2_sampleentry32,
-                              frame2_sampleentry33, frame2_sampleentry34, frame2_sampleentry35, frame2_sampleentry36]
-
-            result = messagebox.askyesno("Save Changes",
-                                         "ARE YOU SURE YOU WANT TO CLEAR? That will erase all unsaved data! ")
-            if result == True:
-                for widget in clear_combobox:
-                    if isinstance(widget, tk.Entry):
-                        widget.delete(0, 300)
-                    elif isinstance(widget, tk.ttk.Combobox):
-                        widget.set("")
-
-        clear_button = tk.Button(frame4, text='Clear', font=("Arial", "12"),
-                                 width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
-                                 activeforeground="#D0FEF7", command=clear)
-        clear_button.grid(row=2, column=4, columnspan=2)
-
-        frame5 = tk.LabelFrame(self, text='')
-        frame5.pack(padx=5, pady=5)
-        frame5.place(relx=0.3, rely=0.95, anchor='sw')
+        save_button.grid(row= 1, column = 4)
 
         def openFile():
             # selecting the file using the askopenfilename() method of filedialog
@@ -1553,145 +1643,36 @@ class SodWindow(tk.Toplevel):
                     print(f"Error opening file: {e}")
             else:
                 self.state("iconic")
-        open_button = tk.Button(frame5, text="Open File", font=("Arial", "12"),
-                                width=18, bg="#d17486", fg="#000000", activebackground="#286F63",
+        open_button = tk.Button(frame3, text="Open File", font=("Arial", "12"),
+                                width=18, bg="#99FA13", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=openFile, cursor="hand2")
-        open_button.grid(row=2, column=2)
+        open_button.grid(row= 1, column = 5)
 
-        def plot():
-
-            group1 = [float(entry.get()) if entry.get() else None for entry in
-                      [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
-                       frame2_sampleentry25, frame2_sampleentry31]]
-
-            group2 = [float(entry.get()) if entry.get() else None for entry in
-                      [frame2_sampleentry2, frame2_sampleentry8, frame2_sampleentry14, frame2_sampleentry20,
-                       frame2_sampleentry26, frame2_sampleentry32]]
-
-            group3 = [float(entry.get()) if entry.get() else None for entry in
-                      [frame2_sampleentry3, frame2_sampleentry9, frame2_sampleentry15, frame2_sampleentry21,
-                       frame2_sampleentry27, frame2_sampleentry33]]
-
-            group4 = [float(entry.get()) if entry.get() else None for entry in
-                      [frame2_sampleentry4, frame2_sampleentry10, frame2_sampleentry16, frame2_sampleentry22,
-                       frame2_sampleentry28, frame2_sampleentry34]]
-
-            group5 = [float(entry.get()) if entry.get() else None for entry in
-                      [frame2_sampleentry5, frame2_sampleentry11, frame2_sampleentry17, frame2_sampleentry23,
-                       frame2_sampleentry29, frame2_sampleentry35]]
-
-            group6 = [float(entry.get()) if entry.get() else None for entry in
-                      [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24,
-                       frame2_sampleentry30, frame2_sampleentry36]]
-
-            def stddev(data):
-                n = len(data)
-                mean = sum(data) / n
-                variance = sum((x - mean) ** 2 for x in data) / (n - 1)
-                return np.sqrt(variance)
-
-            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
-            group1_mean = np.mean(group1_filtered)
-            group1_sd = stddev(group1_filtered)
-
-            # print(f"Mean: {group1_mean}, Standard Deviation: {group1_sd}")
-            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
-            group2_mean = np.mean(group2_filtered)
-            group2_sd = stddev(group2_filtered)
-
-            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
-            group3_mean = np.mean(group3_filtered)
-            group3_sd = stddev(group3_filtered)
-
-            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
-            group4_mean = np.mean(group4_filtered)
-            group4_sd = stddev(group4_filtered)
-
-            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
-            group5_mean = np.mean(group5_filtered)
-            group5_sd = stddev(group5_filtered)
-
-            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
-            group6_mean = np.mean(group6_filtered)
-            group6_sd = stddev(group6_filtered)
-
-            # Generate the plot
-            fig, ax = plt.subplots()
-
-            # ax.bar(0, group1_mean, yerr=group1_se, ecolor='red', capsize=5)
-
-            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, ecolor='red', capsize=5)
-            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
-            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
-            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
-            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label=Combobox_select_type5.get(), ecolor='red', capsize=5)
-            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label=Combobox_select_type6.get(), ecolor='red', capsize=5)
-
-            ax.set_ylabel('Catalase Activity (U/mg protein)')
-            ax.set_xticks([1, 2, 3, 4, 5, 6])
-            ax.set_xticklabels(
-                [(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()),
-                 (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
-
-            plt.show()
-
-        # Create the button
-        plot_button = tk.Button(frame4, text='Plot', font=("Arial", "12"),
-                                width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
-                                activeforeground="#D0FEF7", command=plot, cursor="hand2")
-        plot_button.grid(row=2, column=10, columnspan=2)
-
-
-        def open_excel():
-            # Open file dialog
-            file_path = filedialog.askopenfilename(initialdir="/", title="Select excel file",
-                                                   filetypes=(("all files", "*.*"), ("Excel files")))
-            if file_path.endswith(".xlsx"):
-                engine = 'openpyxl'
-            elif file_path.endswith(".xls"):
-                engine = 'xlrd'
-            else:
-                raise ValueError("Invalid file extension")
-
-            data = pd.read_excel(file_path, engine=engine)
-
-            # Read values from excel file
-            #data = pd.read_excel(file_path)
-
-            # Plot xy graphic
-            plt.plot(data['x'], data['y'])
-            plt.xlabel('Time (Secs)')
-            plt.ylabel('Absorbance (A.U.)')
-            plt.show()
-
-        open_excel_button = tk.Button(frame4, text='Graph XY Excel', font=("Arial", "12"),
-                                      width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
-                                      activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
-        open_excel_button.grid(row=2, column=14, columnspan=2)
 
         def open_window():
             window2 = tk.Toplevel()
             window2.title('Instructions')
             window2.geometry('6000x3000')
-            icon_path = 'Redoxime icon.bmp'
+            icon_path = 'Icon Art.png'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window2.iconphoto(False, icon)
 
             label_name = tk.Label(window2,
-                                  text='Catalase assay conducted as described in Nat Protoc. 2010 ; 5(1): 51–66. doi:10.1038/nprot.2009.197.\n'
+                                  text='Superoxide dismutase assay conducted as described in Author et al. Journal Page Vol Year.\n'
                                        '\n'
-                                       'Abs Blanc → absorbance of the blanc tube - A1. \n'
-                                       'Abs Sample → absorbance of the sample tube - A2 \n'
-                                       'Reaction Volume → total volume in the cuvette. \n'
-                                       'Samples Volume → volume of samples in the cuvette. \n'
-                                       'mg protein/mL → protein concentration of the original sample.\n'
+                                       'Absorbance Blank → absorbance of the blank tube - A1 \n'
+                                       'Absorbance Sample → absorbance of the sample tube - A2 \n'
+                                       'Reaction Volume → total volume in the cuvette \n'
+                                       'Samples Volume → volume of samples in the cuvette \n'
+                                       'mg protein/mL → protein concentration of the original sample\n'
                                        '\n'
                                        'Formula: SOD U/mL = (((A1-A2)/A1)/ 0.5) x (Reaction volume (mL) /Sample volume (mL)) x DF\n'
-		                               '               U/mg protein =  SOD U/mL / mg protein/mL \n'                                   
+		                               '         U/mg protein =  SOD U/mL / mg protein/mL \n'                                   
                                        '\n'
+                                       'The result is automatically copied to clipboard so the user may paste in the table provided or in another software.\n'
                                        '\n'
                                        'Users are expected to enter the data in the table and choose or enter the names or codes of the samples.\n'
-                                       'Each cell in the table can accept numbers, letters, or symbols.\n'
+                                       'Each cell in the table can accept numbers, letters, or symbols. The plot function will not work with letters or symbols. \n'
                                        '\n'
                                        'When pressed, the SAVE BUTTON will save a file in the same folder as the Redoxime calculator.exe file. \n'
                                        'The file will be saved in Excel format (named "SODactivity year-month-day hour-minute-second.xlsx"). The user should modify the name and save it in a different folder.\n'
@@ -1700,7 +1681,7 @@ class SodWindow(tk.Toplevel):
                                        'The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. \n'
                                        '\n'
                                        'The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file. \n'
-                                       '\n',
+                                       '\nContact email: heberty.facundo@gmail.com',
                                         bd=1, justify='left', font=('calibre', 16))
 
             label_name.grid(row=4, column=0, sticky='w')
@@ -1715,10 +1696,9 @@ class SodWindow(tk.Toplevel):
             window_prot3 = tk.Toplevel()
             window_prot3.title('Protein')
             window_prot3.geometry('1200x300')
-            icon_path = 'Redoxime icon.bmp'
+            icon_path = 'Icon Art.png'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window_prot3.iconphoto(False, icon)
-
 
             reg = LinearRegression()
 
@@ -1726,7 +1706,6 @@ class SodWindow(tk.Toplevel):
             x_label = tk.Label(window_prot3, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
 
-            # Create 10 entry boxes for x values
             x_entries = [tk.Entry(window_prot3) for i in range(7)]
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
@@ -1792,11 +1771,11 @@ class SodWindow(tk.Toplevel):
 
                 else:
                     # Show an error message if x and y are empty
-                    messagebox.askyesno("Error", "Did you forget the numbers? You are such a GENIUS!")
+                    messagebox.showerror("Error", "Did you forget the numbers? Decimals must be separated by dot! Do not use comma.")
 
             # Create a button to trigger calculation and plot
             calculate_button = tk.Button(window_prot3, text="Calculate", command=calculate)
-            calculate_button.grid(row=2, column=1, columnspan=11, pady=10)
+            calculate_button.grid(row=2, column=1, pady=10)
 
             # Create a label for slope
             slope_label = tk.Label(window_prot3, text="Slope:")
@@ -1814,6 +1793,9 @@ class SodWindow(tk.Toplevel):
             intercept_value_label = tk.Label(window_prot3)
             intercept_value_label.grid(row=4, column=1)
 
+            slope_label = tk.Label(window_prot3, text="Sample Absorbance")
+            slope_label.grid(row=3, column=4, sticky="W")
+
             sample_entry = tk.Entry(window_prot3)
             sample_entry.grid(row=4, column=4, sticky="W")
 
@@ -1823,7 +1805,10 @@ class SodWindow(tk.Toplevel):
                 second = float(slo_entry.get())
                 output = first / second
                 print(output)
+                output = round(output, 4)
                 output_label.config(text=str(output))
+
+                clipboard.copy(output)
 
             output_label = tk.Label(window_prot3, text='', font=('calibre', 10))
             output_label.grid(row=8, column=5, sticky="W")
@@ -1836,7 +1821,7 @@ class SodWindow(tk.Toplevel):
             button_voltar = tk.Button(window_prot3, text='Close', font=('calibre', 20), command=window_prot3.destroy, cursor="hand2")
             button_voltar.place(x=1050, y=600)
 
-        Window_prot3_button1 = tk.Button(self, text='Calculate Protein', command=window_prot3, cursor="hand2")
+        Window_prot3_button1 = tk.Button(self, text='Protein', command=window_prot3, cursor="hand2")
         Window_prot3_button1.grid(row=3, column=3)
 
 
