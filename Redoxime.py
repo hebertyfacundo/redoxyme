@@ -525,7 +525,7 @@ class CatalaseWindow(tk.Toplevel):
             # Create a label for x values
             x_label = tk.Label(window_prot1, text="Protein_Concentration (mg/mL)(X)")
             x_label.grid(row=0, column=0, sticky="W")
-           
+
             x_entries = [tk.Entry(window_prot1) for i in range(7)]
             for i, entry in enumerate(x_entries):
                 entry.grid(row=0, column=i + 1)
@@ -534,7 +534,6 @@ class CatalaseWindow(tk.Toplevel):
             y_label = tk.Label(window_prot1, text="Absorbance (A.U) (Y)")
             y_label.grid(row=1, column=0, sticky="W")
 
-            # Create 10 entry boxes for y values
             y_entries = [tk.Entry(window_prot1) for i in range(7)]
             for i, entry in enumerate(y_entries):
                 entry.grid(row=1, column=i + 1)
@@ -1137,7 +1136,6 @@ class GpxWindow(tk.Toplevel):
             y_label = tk.Label(window_prot2, text="Absorbance (A.U) (Y)")
             y_label.grid(row=1, column=0, sticky="W")
 
-            # Create 10 entry boxes for y values
             y_entries = [tk.Entry(window_prot2) for i in range(7)]
             for i, entry in enumerate(y_entries):
                 entry.grid(row=1, column=i + 1)
@@ -1714,7 +1712,6 @@ class SodWindow(tk.Toplevel):
             y_label = tk.Label(window_prot3, text="Absorbance (A.U) (Y)")
             y_label.grid(row=1, column=0, sticky="W")
 
-            # Create 10 entry boxes for y values
             y_entries = [tk.Entry(window_prot3) for i in range(7)]
             for i, entry in enumerate(y_entries):
                 entry.grid(row=1, column=i + 1)
@@ -1828,4 +1825,5 @@ class SodWindow(tk.Toplevel):
 if __name__ == "__main__":
     root = MainWindow()
     root.mainloop()
+
 
