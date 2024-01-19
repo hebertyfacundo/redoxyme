@@ -1,20 +1,17 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
+from tkinter import PhotoImage
 import math
 import openpyxl
-from openpyxl import Workbook
 import pandas as pd
 import tkinter.filedialog as filedialog
 from tkinter import messagebox
 from sklearn.linear_model import LinearRegression
 import os
-import shutil
-import hashlib
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
-import time
 from PIL import Image, ImageTk
 import clipboard
 import warnings
