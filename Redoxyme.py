@@ -25,7 +25,7 @@ class MainWindow(tk.Tk):
         self.wm_title("Redoxyme - Redox Enzyme Activity Calculator")
         self.geometry("1200x600+80+30")
         self.resizable(False,False)
-        icon_path = 'Icon Art.png'
+        icon_path = 'Icon-Art.ico'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -75,7 +75,7 @@ class CatalaseWindow(tk.Toplevel):
         self.title("Catalase Activity Calculator")
         self.geometry("1950x820")
         self.configure(background='#EFFFFE')
-        icon_path = 'Icon Art.png'
+        icon_path = 'Icon-Art.ico'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -456,7 +456,7 @@ class CatalaseWindow(tk.Toplevel):
             window2 = tk.Toplevel()
             window2.title('Instructions')
             window2.geometry('6000x3000')
-            icon_path = 'Icon Art.png'
+            icon_path = 'Icon-Art.ico'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window2.iconphoto(False, icon)
 
@@ -499,7 +499,7 @@ class CatalaseWindow(tk.Toplevel):
             window_prot1 = tk.Toplevel()
             window_prot1.title('Protein')
             window_prot1.geometry('1200x300')
-            icon_path = 'Icon Art.png'
+            icon_path = 'Icon-Art.ico'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window_prot1.iconphoto(False, icon)
 
@@ -619,7 +619,7 @@ class GpxWindow(tk.Toplevel):
         self.title("Glutathione Peroxidase Activity Calculator")
         self.geometry("2000x820")
         self.configure(background='#FCEDEA')
-        icon_path = 'Icon Art.png'
+        icon_path = 'Icon-Art.ico'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -1034,7 +1034,7 @@ class GpxWindow(tk.Toplevel):
             window2 = tk.Toplevel()
             window2.title('Instructions')
             window2.geometry('6000x3000')
-            icon_path = 'Icon Art.png'
+            icon_path = 'Icon-Art.ico'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window2.iconphoto(False, icon)
 
@@ -1080,7 +1080,7 @@ class GpxWindow(tk.Toplevel):
             window_prot2 = tk.Toplevel()
             window_prot2.title('Protein')
             window_prot2.geometry('1200x300')
-            icon_path = 'Icon Art.png'
+            icon_path = 'Icon-Art.ico'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window_prot2.iconphoto(False, icon)
 
@@ -1200,7 +1200,7 @@ class SodWindow(tk.Toplevel):
         self.title("SOD Activity Calculator")
         self.geometry("2000x820")
         self.configure(background='#EEFBDC')
-        icon_path = 'Icon Art.png'
+        icon_path = 'Icon-Art.ico'
         icon = ImageTk.PhotoImage(Image.open(icon_path))
         self.iconphoto(False, icon)
 
@@ -1590,7 +1590,7 @@ class SodWindow(tk.Toplevel):
             window2 = tk.Toplevel()
             window2.title('Instructions')
             window2.geometry('6000x3000')
-            icon_path = 'Icon Art.png'
+            icon_path = 'Icon-Art.ico'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window2.iconphoto(False, icon)
 
@@ -1630,7 +1630,7 @@ class SodWindow(tk.Toplevel):
             window_prot3 = tk.Toplevel()
             window_prot3.title('Protein')
             window_prot3.geometry('1200x300')
-            icon_path = 'Icon Art.png'
+            icon_path = 'Icon-Art.ico'
             icon = ImageTk.PhotoImage(Image.open(icon_path))
             window_prot3.iconphoto(False, icon)
 
