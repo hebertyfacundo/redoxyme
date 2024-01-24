@@ -319,11 +319,14 @@ class CatalaseWindow(tk.Toplevel):
                                       activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
         open_excel_button.grid(row=1, column=1)
 
-        # Assuming the stddev function is defined here
         def stddev(data):
             n = len(data)
             if n == 0:
                 return np.nan  # Return NaN for standard deviation if the group is empty
+            elif n < 2:
+                messagebox.showerror("Error", "Only one number in a column. Impossible to calculate standard deviation")
+                raise ValueError("Only one number in a column. Impossible to calculate standard deviation")
+
             mean_value = sum(data) / n
             variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
             return np.sqrt(variance)
@@ -334,9 +337,12 @@ class CatalaseWindow(tk.Toplevel):
             if not group_filtered:
                 return np.nan, np.nan  # Return NaN for both mean and sd if the group is empty
 
-            mean_value = np.mean(group_filtered)
-            sd = stddev(group_filtered)
-            return mean_value, sd
+            try:
+                mean_value = np.mean(group_filtered)
+                sd = stddev(group_filtered)
+                return mean_value, sd
+            except ValueError:
+                return np.nan, np.nan
 
         def plot():
             group1 = [float(entry.get()) if entry.get() else None for entry in
@@ -878,6 +884,10 @@ class GpxWindow(tk.Toplevel):
             n = len(data)
             if n == 0:
                 return np.nan  # Return NaN for standard deviation if the group is empty
+            elif n < 2:
+                messagebox.showerror("Error", "Only one number in a column. Impossible to calculate standard deviation")
+                raise ValueError("Only one number in a column. Impossible to calculate standard deviation")
+
             mean_value = sum(data) / n
             variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
             return np.sqrt(variance)
@@ -888,10 +898,12 @@ class GpxWindow(tk.Toplevel):
             if not group_filtered:
                 return np.nan, np.nan  # Return NaN for both mean and sd if the group is empty
 
-            mean_value = np.mean(group_filtered)
-            sd = stddev(group_filtered)
-            return mean_value, sd
-
+            try:
+                mean_value = np.mean(group_filtered)
+                sd = stddev(group_filtered)
+                return mean_value, sd
+            except ValueError:
+                return np.nan, np.nan
         def plot():
             group1 = [float(entry.get()) if entry.get() else None for entry in
                       [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
@@ -1441,6 +1453,10 @@ class SodWindow(tk.Toplevel):
             n = len(data)
             if n == 0:
                 return np.nan  # Return NaN for standard deviation if the group is empty
+            elif n < 2:
+                messagebox.showerror("Error", "Only one number in a column. Impossible to calculate standard deviation")
+                raise ValueError("Only one number in a column. Impossible to calculate standard deviation")
+
             mean_value = sum(data) / n
             variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
             return np.sqrt(variance)
@@ -1451,9 +1467,12 @@ class SodWindow(tk.Toplevel):
             if not group_filtered:
                 return np.nan, np.nan  # Return NaN for both mean and sd if the group is empty
 
-            mean_value = np.mean(group_filtered)
-            sd = stddev(group_filtered)
-            return mean_value, sd
+            try:
+                mean_value = np.mean(group_filtered)
+                sd = stddev(group_filtered)
+                return mean_value, sd
+            except ValueError:
+                return np.nan, np.nan
 
         def plot():
             group1 = [float(entry.get()) if entry.get() else None for entry in
