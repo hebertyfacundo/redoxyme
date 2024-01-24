@@ -26,6 +26,7 @@ When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXYM
 The file will be saved in Excel format (named "catalaseactivity year-month-day hour-minute-second.xlsx"). The user should save it in a different folder.
 If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.
 The Plot button will create a plot from data. The Graph XY excel button is used to open an excel with traces of enzyme activity.
+The trace must be saved in excel as: column A = time values, column B = absorbance values with no additional text or letters.
 
 The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. 
 
@@ -66,6 +67,7 @@ When pressed, the SAVE BUTTON will save a file in the same folder as the REDOXYM
 The file will be saved in Excel format (named "GPXactivity year-month-day hour-minute-second.xlsx"). 
 If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.
 The Plot button will create a plot from data. The Graph XY excel button is used to open an excel with traces of enzyme activity.
+The trace must be saved in excel as: column A = time values, column B = absorbance values with no additional text or letters.
 The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button.
 
 The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.
