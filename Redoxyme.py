@@ -14,7 +14,6 @@ import numpy as np
 import datetime
 from PIL import Image, ImageTk
 import clipboard
-import warnings
 
 class MainWindow(tk.Tk):
     def __init__(self):
@@ -23,7 +22,9 @@ class MainWindow(tk.Tk):
         self.geometry("1200x600+80+30")
         self.resizable(False,False)
         icon_path = 'Icon-Art.ico'
-        icon = ImageTk.PhotoImage(Image.open(icon_path))
+        with Image.open(icon_path) as img:
+            icon = ImageTk.PhotoImage(img)
+
         self.iconphoto(False, icon)
 
         self.button1 = tk.Button(self, text="Catalase", command=self.open_catalase_window,
@@ -73,7 +74,9 @@ class CatalaseWindow(tk.Toplevel):
         self.geometry("1950x820")
         self.configure(background='#EFFFFE')
         icon_path = 'Icon-Art.ico'
-        icon = ImageTk.PhotoImage(Image.open(icon_path))
+        with Image.open(icon_path) as img:
+            icon = ImageTk.PhotoImage(img)
+
         self.iconphoto(False, icon)
 
         frame1 = tk.LabelFrame(self, text='')
@@ -100,7 +103,7 @@ class CatalaseWindow(tk.Toplevel):
             Output_label.config(text=str(output))
             clipboard.copy(output)
 
-        Absorbance0entry = tk.Entry(frame1, width=12, text = Absorbance0)
+        Absorbance0entry = tk.Entry(frame1, width=12, text=Absorbance0)
         Absorbance60entry = tk.Entry(frame1, width=12, textvariable=Absorbance60)
         Reaction_volumeentry = tk.Entry(frame1, width=12, textvariable=Reaction_volume)
         Sample_volumeentry = tk.Entry(frame1, width=12, textvariable=Sample_volume)
@@ -316,8 +319,26 @@ class CatalaseWindow(tk.Toplevel):
                                       activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
         open_excel_button.grid(row=1, column=1)
 
+        # Assuming the stddev function is defined here
+        def stddev(data):
+            n = len(data)
+            if n == 0:
+                return np.nan  # Return NaN for standard deviation if the group is empty
+            mean_value = sum(data) / n
+            variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
+            return np.sqrt(variance)
+
+        def calculate_stats(group):
+            group_filtered = [x for x in group if x is not None and not np.isnan(x)]
+
+            if not group_filtered:
+                return np.nan, np.nan  # Return NaN for both mean and sd if the group is empty
+
+            mean_value = np.mean(group_filtered)
+            sd = stddev(group_filtered)
+            return mean_value, sd
+
         def plot():
-            warnings.filterwarnings("ignore", category=RuntimeWarning)
             group1 = [float(entry.get()) if entry.get() else None for entry in
                       [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
                        frame2_sampleentry25, frame2_sampleentry31]]
@@ -342,52 +363,35 @@ class CatalaseWindow(tk.Toplevel):
                       [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24,
                        frame2_sampleentry30, frame2_sampleentry36]]
 
-            def stddev(data):
-                n = len(data)
-                if n == 0:
-                    return np.nan  # Return NaN for standard deviation if the group is empty
-                mean_value = sum(data) / n
-                variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
-                return np.sqrt(variance)
-
-            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
-            group1_mean = np.mean(group1_filtered)
-            group1_sd = stddev(group1_filtered)
-
-            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
-            group2_mean = np.mean(group2_filtered)
-            group2_sd = stddev(group2_filtered)
-
-            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
-            group3_mean = np.mean(group3_filtered)
-            group3_sd = stddev(group3_filtered)
-
-            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
-            group4_mean = np.mean(group4_filtered)
-            group4_sd = stddev(group4_filtered)
-
-            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
-            group5_mean = np.mean(group5_filtered)
-            group5_sd = stddev(group5_filtered)
-
-            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
-            group6_mean = np.mean(group6_filtered)
-            group6_sd = stddev(group6_filtered)
+            group1_mean, group1_sd = calculate_stats(group1)
+            group2_mean, group2_sd = calculate_stats(group2)
+            group3_mean, group3_sd = calculate_stats(group3)
+            group4_mean, group4_sd = calculate_stats(group4)
+            group5_mean, group5_sd = calculate_stats(group5)
+            group6_mean, group6_sd = calculate_stats(group6)
 
             fig, ax = plt.subplots()
 
-            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
-            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
-            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
-            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
-            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label=Combobox_select_type5.get(), ecolor='red', capsize=5)
-            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label=Combobox_select_type6.get(), ecolor='red', capsize=5)
+            def plot_bars(ax, x_coordinates, group_means, group_sds, labels):
+                bars = []
+                for x, mean, sd, label in zip(x_coordinates, group_means, group_sds, labels):
+                    if not np.isnan(mean) and not np.isnan(sd):
+                        bar = ax.bar(x, mean, yerr=sd, label=label, ecolor='red', capsize=5)
+                        bars.append(bar)
+                return bars
+
+            bars1 = [1, 2, 3, 4, 5, 6]
+
+            bar1 = plot_bars(ax, bars1, [group1_mean, group2_mean, group3_mean, group4_mean, group5_mean, group6_mean],
+                             [group1_sd, group2_sd, group3_sd, group4_sd, group5_sd, group6_sd],
+                             [Combobox_select_type1.get(), Combobox_select_type2.get(), Combobox_select_type3.get(),
+                              Combobox_select_type4.get(), Combobox_select_type5.get(), Combobox_select_type6.get()])
 
             ax.set_ylabel('Catalase Activity (U/mg protein)')
             ax.set_xticks([1, 2, 3, 4, 5, 6])
             ax.set_xticklabels(
-                [(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()),
-                 (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
+                [Combobox_select_type1.get(), Combobox_select_type2.get(), Combobox_select_type3.get(),
+                 Combobox_select_type4.get(), Combobox_select_type5.get(), Combobox_select_type6.get()])
 
             plt.show()
 
@@ -395,7 +399,6 @@ class CatalaseWindow(tk.Toplevel):
                                 width=16, bg="#04D4ED", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
         plot_button.grid(row=1, column=2)
-        warnings.resetwarnings()
 
         def clear():
 
@@ -454,7 +457,9 @@ class CatalaseWindow(tk.Toplevel):
             window2.title('Instructions')
             window2.geometry('6000x3000')
             icon_path = 'Icon-Art.ico'
-            icon = ImageTk.PhotoImage(Image.open(icon_path))
+            with Image.open(icon_path) as img:
+                icon = ImageTk.PhotoImage(img)
+
             window2.iconphoto(False, icon)
 
             label_name = tk.Label(window2,
@@ -478,6 +483,7 @@ class CatalaseWindow(tk.Toplevel):
                                        'The file will be saved in Excel format (named "catalaseactivity year-month-day hour-minute-second.xlsx"). The user should save it in a different folder.\n'
                                        'If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.\n'
                                        'The Plot button will create a plot from data. The Graph XY excel button is used to open an excel with traces of enzyme activity.\n'
+                                       'The trace must be saved in excel as: column A = time values, column B = absorbance values with no additional text or letters.\n'
                                        '\n'
                                        'The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. \n'
                                        '\n'
@@ -497,7 +503,9 @@ class CatalaseWindow(tk.Toplevel):
             window_prot1.title('Protein')
             window_prot1.geometry('1200x300')
             icon_path = 'Icon-Art.ico'
-            icon = ImageTk.PhotoImage(Image.open(icon_path))
+            with Image.open(icon_path) as img:
+                icon = ImageTk.PhotoImage(img)
+
             window_prot1.iconphoto(False, icon)
 
 
@@ -866,8 +874,25 @@ class GpxWindow(tk.Toplevel):
                                       activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
         open_excel_button.grid(row=1, column=1)
 
+        def stddev(data):
+            n = len(data)
+            if n == 0:
+                return np.nan  # Return NaN for standard deviation if the group is empty
+            mean_value = sum(data) / n
+            variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
+            return np.sqrt(variance)
+
+        def calculate_stats(group):
+            group_filtered = [x for x in group if x is not None and not np.isnan(x)]
+
+            if not group_filtered:
+                return np.nan, np.nan  # Return NaN for both mean and sd if the group is empty
+
+            mean_value = np.mean(group_filtered)
+            sd = stddev(group_filtered)
+            return mean_value, sd
+
         def plot():
-            warnings.filterwarnings("ignore", category=RuntimeWarning)
             group1 = [float(entry.get()) if entry.get() else None for entry in
                       [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
                        frame2_sampleentry25, frame2_sampleentry31]]
@@ -892,52 +917,35 @@ class GpxWindow(tk.Toplevel):
                       [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24,
                        frame2_sampleentry30, frame2_sampleentry36]]
 
-            def stddev(data):
-                n = len(data)
-                if n == 0:
-                    return np.nan  # Return NaN for standard deviation if the group is empty
-                mean_value = sum(data) / n
-                variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
-                return np.sqrt(variance)
-
-            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
-            group1_mean = np.mean(group1_filtered)
-            group1_sd = stddev(group1_filtered)
-
-            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
-            group2_mean = np.mean(group2_filtered)
-            group2_sd = stddev(group2_filtered)
-
-            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
-            group3_mean = np.mean(group3_filtered)
-            group3_sd = stddev(group3_filtered)
-
-            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
-            group4_mean = np.mean(group4_filtered)
-            group4_sd = stddev(group4_filtered)
-
-            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
-            group5_mean = np.mean(group5_filtered)
-            group5_sd = stddev(group5_filtered)
-
-            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
-            group6_mean = np.mean(group6_filtered)
-            group6_sd = stddev(group6_filtered)
+            group1_mean, group1_sd = calculate_stats(group1)
+            group2_mean, group2_sd = calculate_stats(group2)
+            group3_mean, group3_sd = calculate_stats(group3)
+            group4_mean, group4_sd = calculate_stats(group4)
+            group5_mean, group5_sd = calculate_stats(group5)
+            group6_mean, group6_sd = calculate_stats(group6)
 
             fig, ax = plt.subplots()
 
-            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
-            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
-            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
-            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
-            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label=Combobox_select_type5.get(), ecolor='red', capsize=5)
-            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label=Combobox_select_type6.get(), ecolor='red', capsize=5)
+            def plot_bars(ax, x_coordinates, group_means, group_sds, labels):
+                bars = []
+                for x, mean, sd, label in zip(x_coordinates, group_means, group_sds, labels):
+                    if not np.isnan(mean) and not np.isnan(sd):
+                        bar = ax.bar(x, mean, yerr=sd, label=label, ecolor='red', capsize=5)
+                        bars.append(bar)
+                return bars
 
-            ax.set_ylabel('Catalase Activity (U/mg protein)')
+            bars1 = [1, 2, 3, 4, 5, 6]
+
+            bar1 = plot_bars(ax, bars1, [group1_mean, group2_mean, group3_mean, group4_mean, group5_mean, group6_mean],
+                             [group1_sd, group2_sd, group3_sd, group4_sd, group5_sd, group6_sd],
+                             [Combobox_select_type1.get(), Combobox_select_type2.get(), Combobox_select_type3.get(),
+                              Combobox_select_type4.get(), Combobox_select_type5.get(), Combobox_select_type6.get()])
+
+            ax.set_ylabel('Glutathione Peroxidase Activity (U/mg protein)')
             ax.set_xticks([1, 2, 3, 4, 5, 6])
             ax.set_xticklabels(
-                [(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()),
-                 (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
+                [Combobox_select_type1.get(), Combobox_select_type2.get(), Combobox_select_type3.get(),
+                 Combobox_select_type4.get(), Combobox_select_type5.get(), Combobox_select_type6.get()])
 
             plt.show()
 
@@ -945,8 +953,6 @@ class GpxWindow(tk.Toplevel):
                                 width=16, bg="#d17486", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
         plot_button.grid(row=1, column=2)
-        warnings.resetwarnings()
-
 
         def clear():
             clear_combobox = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3,
@@ -1032,7 +1038,9 @@ class GpxWindow(tk.Toplevel):
             window2.title('Instructions')
             window2.geometry('6000x3000')
             icon_path = 'Icon-Art.ico'
-            icon = ImageTk.PhotoImage(Image.open(icon_path))
+            with Image.open(icon_path) as img:
+                icon = ImageTk.PhotoImage(img)
+
             window2.iconphoto(False, icon)
 
             label_name=tk.Label(window2, text='1 unit of GPx-1 is defined as the amount of enzyme necessary to catalyze the oxidation  \n'
@@ -1060,6 +1068,7 @@ class GpxWindow(tk.Toplevel):
                                       'The file will be saved in Excel format (named "GPXactivity year-month-day hour-minute-second.xlsx"). \n'
                                       'If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current information of Y-M-D H-min-sec.\n'
                                       'The Plot button will create a plot from data. The Graph XY excel button is used to open an excel with traces of enzyme activity.\n'
+                                      'The trace must be saved in excel as: column A = time values, column B = absorbance values with no additional text or letters.\n'
                                       'The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. \n' 
                                       '\n'
                                       'The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file. \n'
@@ -1077,8 +1086,9 @@ class GpxWindow(tk.Toplevel):
             window_prot2 = tk.Toplevel()
             window_prot2.title('Protein')
             window_prot2.geometry('1200x300')
-            icon_path = 'Icon-Art.ico'
-            icon = ImageTk.PhotoImage(Image.open(icon_path))
+            with Image.open(icon_path) as img:
+                icon = ImageTk.PhotoImage(img)
+
             window_prot2.iconphoto(False, icon)
 
 
@@ -1198,7 +1208,9 @@ class SodWindow(tk.Toplevel):
         self.geometry("2000x820")
         self.configure(background='#EEFBDC')
         icon_path = 'Icon-Art.ico'
-        icon = ImageTk.PhotoImage(Image.open(icon_path))
+        with Image.open(icon_path) as img:
+            icon = ImageTk.PhotoImage(img)
+
         self.iconphoto(False, icon)
 
         frame1 = tk.LabelFrame(self, text='')
@@ -1425,8 +1437,25 @@ class SodWindow(tk.Toplevel):
                                       activeforeground="#D0FEF7", command=open_excel, cursor="hand2")
         open_excel_button.grid(row=1, column=1)
 
+        def stddev(data):
+            n = len(data)
+            if n == 0:
+                return np.nan  # Return NaN for standard deviation if the group is empty
+            mean_value = sum(data) / n
+            variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
+            return np.sqrt(variance)
+
+        def calculate_stats(group):
+            group_filtered = [x for x in group if x is not None and not np.isnan(x)]
+
+            if not group_filtered:
+                return np.nan, np.nan  # Return NaN for both mean and sd if the group is empty
+
+            mean_value = np.mean(group_filtered)
+            sd = stddev(group_filtered)
+            return mean_value, sd
+
         def plot():
-            warnings.filterwarnings("ignore", category=RuntimeWarning)
             group1 = [float(entry.get()) if entry.get() else None for entry in
                       [frame2_sampleentry1, frame2_sampleentry7, frame2_sampleentry13, frame2_sampleentry19,
                        frame2_sampleentry25, frame2_sampleentry31]]
@@ -1451,54 +1480,35 @@ class SodWindow(tk.Toplevel):
                       [frame2_sampleentry6, frame2_sampleentry12, frame2_sampleentry18, frame2_sampleentry24,
                        frame2_sampleentry30, frame2_sampleentry36]]
 
-            def stddev(data):
-                n = len(data)
-                if n == 0:
-                    return np.nan  # Return not a number (NaN) for standard deviation if the group is empty
-                mean_value = sum(data) / n
-                variance = sum((x - mean_value) ** 2 for x in data) / (n - 1)
-                return np.sqrt(variance)
-
-            group1_filtered = [x for x in group1 if x is not None and not np.isnan(x)]
-            group1_mean = np.mean(group1_filtered)
-            group1_sd = stddev(group1_filtered)
-
-            group2_filtered = [x for x in group2 if x is not None and not np.isnan(x)]
-            group2_mean = np.mean(group2_filtered)
-            group2_sd = stddev(group2_filtered)
-
-            group3_filtered = [x for x in group3 if x is not None and not np.isnan(x)]
-            group3_mean = np.mean(group3_filtered)
-            group3_sd = stddev(group3_filtered)
-
-            group4_filtered = [x for x in group4 if x is not None and not np.isnan(x)]
-            group4_mean = np.mean(group4_filtered)
-            group4_sd = stddev(group4_filtered)
-
-            group5_filtered = [x for x in group5 if x is not None and not np.isnan(x)]
-            group5_mean = np.mean(group5_filtered)
-            group5_sd = stddev(group5_filtered)
-
-            group6_filtered = [x for x in group6 if x is not None and not np.isnan(x)]
-            group6_mean = np.mean(group6_filtered)
-            group6_sd = stddev(group6_filtered)
+            group1_mean, group1_sd = calculate_stats(group1)
+            group2_mean, group2_sd = calculate_stats(group2)
+            group3_mean, group3_sd = calculate_stats(group3)
+            group4_mean, group4_sd = calculate_stats(group4)
+            group5_mean, group5_sd = calculate_stats(group5)
+            group6_mean, group6_sd = calculate_stats(group6)
 
             fig, ax = plt.subplots()
 
-            bar1 = ax.bar(1, group1_mean, yerr=group1_sd, label=Combobox_select_type1.get(), ecolor='red', capsize=5)
-            bar2 = ax.bar(2, group2_mean, yerr=group2_sd, label=Combobox_select_type2.get(), ecolor='red', capsize=5)
-            bar3 = ax.bar(3, group3_mean, yerr=group3_sd, label=Combobox_select_type3.get(), ecolor='red', capsize=5)
-            bar4 = ax.bar(4, group4_mean, yerr=group4_sd, label=Combobox_select_type4.get(), ecolor='red', capsize=5)
-            bar5 = ax.bar(5, group5_mean, yerr=group5_sd, label=Combobox_select_type5.get(), ecolor='red', capsize=5)
-            bar6 = ax.bar(6, group6_mean, yerr=group6_sd, label=Combobox_select_type6.get(), ecolor='red', capsize=5)
+            def plot_bars(ax, x_coordinates, group_means, group_sds, labels):
+                bars = []
+                for x, mean, sd, label in zip(x_coordinates, group_means, group_sds, labels):
+                    if not np.isnan(mean) and not np.isnan(sd):
+                        bar = ax.bar(x, mean, yerr=sd, label=label, ecolor='red', capsize=5)
+                        bars.append(bar)
+                return bars
 
+            bars1 = [1, 2, 3, 4, 5, 6]
 
+            bar1 = plot_bars(ax, bars1, [group1_mean, group2_mean, group3_mean, group4_mean, group5_mean, group6_mean],
+                             [group1_sd, group2_sd, group3_sd, group4_sd, group5_sd, group6_sd],
+                             [Combobox_select_type1.get(), Combobox_select_type2.get(), Combobox_select_type3.get(),
+                              Combobox_select_type4.get(), Combobox_select_type5.get(), Combobox_select_type6.get()])
 
-            ax.set_ylabel('Catalase Activity (U/mg protein)')
+            ax.set_ylabel('Superoxide Dismutase Activity (U/mg protein)')
             ax.set_xticks([1, 2, 3, 4, 5, 6])
             ax.set_xticklabels(
-                [(Combobox_select_type1.get()), (Combobox_select_type2.get()), (Combobox_select_type3.get()),
-                 (Combobox_select_type4.get()), (Combobox_select_type5.get()), (Combobox_select_type6.get())])
+                [Combobox_select_type1.get(), Combobox_select_type2.get(), Combobox_select_type3.get(),
+                 Combobox_select_type4.get(), Combobox_select_type5.get(), Combobox_select_type6.get()])
 
             plt.show()
 
@@ -1506,8 +1516,6 @@ class SodWindow(tk.Toplevel):
                                 width=16, bg="#99FA13", fg="#000000", activebackground="#286F63",
                                 activeforeground="#D0FEF7", command=plot, cursor="hand2")
         plot_button.grid(row=1, column=2)
-        warnings.resetwarnings()
-
 
         def clear():
             clear_combobox = [Combobox_select_type1, Combobox_select_type2, Combobox_select_type3,
@@ -1588,7 +1596,9 @@ class SodWindow(tk.Toplevel):
             window2.title('Instructions')
             window2.geometry('6000x3000')
             icon_path = 'Icon-Art.ico'
-            icon = ImageTk.PhotoImage(Image.open(icon_path))
+            with Image.open(icon_path) as img:
+                icon = ImageTk.PhotoImage(img)
+
             window2.iconphoto(False, icon)
 
             label_name = tk.Label(window2,
@@ -1628,7 +1638,9 @@ class SodWindow(tk.Toplevel):
             window_prot3.title('Protein')
             window_prot3.geometry('1200x300')
             icon_path = 'Icon-Art.ico'
-            icon = ImageTk.PhotoImage(Image.open(icon_path))
+            with Image.open(icon_path) as img:
+                icon = ImageTk.PhotoImage(img)
+
             window_prot3.iconphoto(False, icon)
 
             reg = LinearRegression()
@@ -1739,7 +1751,6 @@ class SodWindow(tk.Toplevel):
 
         Window_prot3_button1 = tk.Button(self, text='Protein', command=window_prot3, cursor="hand2")
         Window_prot3_button1.grid(row=3, column=3)
-
 
 if __name__ == "__main__":
     root = MainWindow()
