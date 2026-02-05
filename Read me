@@ -2,6 +2,10 @@ Read me
 Instruction to use Redoxyme
 Contact email: heberty.facundo@gmail.com
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 CATALASE PROGRAM
 
 The user should start by clicking the Graph XY excel. This button is used to open an excel with line graphs of enzyme activity (Absorbance x Time).
