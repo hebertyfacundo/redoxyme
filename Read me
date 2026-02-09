@@ -103,3 +103,25 @@ If the SAVE BUTTON is pressed again, it will SAVE IT AGAIN with the current info
 The user can open the above-saved file or any other file on their computer by pressing the OPEN FILE button. 
 
 The CLEAR button, when pressed, will erase all data. Please, check for proper data in the saved file.
+
+## 📱 Versões Disponíveis
+
+### 🖥️ **Desktop Version** (Original)
+- Arquivo: Redoxyme.py, Redoxyme.exe (locally installed)
+- Requisitos: Python 3.8+, Tkinter, scikit-learn, pandas, etc.
+- Uso: `python Redoxyme.py`
+
+### 🌐 **Web Version** (Nova!)
+- Arquivo: redoxyme_web.py
+- Online: https://redoxyme.streamlit.app
+- Requisitos: Apenas Streamlit
+- Uso local: `streamlit run redoxyme_web.py`
+
+## 🧪 Calculadoras Disponíveis
+1. **Catalase (CAT)** - H₂O₂ decomposition at 240 nm
+2. **Glutathione Peroxidase (GPX)** - NADPH oxidation at 340 nm  
+3. **Superoxide Dismutase (SOD)** - NBT reduction inhibition at 560 nm
+
+## 🔗 Links
+- 🌐 Web App: https://redoxyme.streamlit.app
+- 📦 Código: https://github.com/hebertyfacundo/redoxyme
