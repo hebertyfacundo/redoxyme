@@ -1233,7 +1233,6 @@ class SodWindow(tk.Toplevel):
         AbsSample = tk.StringVar()
         Reaction_volume = tk.StringVar()
         Sample_volume = tk.StringVar()
-        Dilution_factor =tk.StringVar()
         mgprot = tk.StringVar()
 
         def answer():
@@ -1242,7 +1241,7 @@ class SodWindow(tk.Toplevel):
             React_volume = float(Reaction_volume.get()) / float(Sample_volume.get())
             U =  Unit_Calc * React_volume
             U_mgprot = U / float(mgprot.get())
-            output = U_mgprot * float(Dilution_factor.get())
+            output = U_mgprot
             output = round(output, 4)
             Output_label.config(text=str(output))
             clipboard.copy(output)
@@ -1252,14 +1251,12 @@ class SodWindow(tk.Toplevel):
         Reaction_volumeentry = tk.Entry(frame1, width=12, textvariable=Reaction_volume)
         Sample_volumeentry = tk.Entry(frame1, width=12, textvariable=Sample_volume)
         mgprotentry = tk.Entry(frame1, width=12, textvariable=mgprot)
-        Dilution_factorentry = tk.Entry(frame1, width=12, textvariable=Dilution_factor)
 
         AbsBlank_label = tk.Label(frame1, text='Absorbance Blank', font=('calibre', 20))
         AbsSample_label = tk.Label(frame1, text='Absorbance Sample', font=('calibre', 20))
         Reaction_volume_label = tk.Label(frame1, text=' Reaction Volume', font=('calibre', 20))
         Sample_volume_label = tk.Label(frame1, text='   Sample Volume', font=('calibre', 20))
         mgprotentry_label = tk.Label(frame1, text='     mg Protein/mL', font=('calibre', 20))
-        Dilution_factor_label= tk.Label(frame1, text='     Dilution Factor', font=('calibre', 20))
         Output_label = tk.Label(frame1, text='', font=('calibre', 10))
         Result_label = tk.Label(frame1, text='  Activity: U/mg Protein', font=('calibre', 15), bg=("dark gray"))
 
@@ -1273,8 +1270,6 @@ class SodWindow(tk.Toplevel):
         Sample_volumeentry.grid(row=5, column=2)
         mgprotentry_label.grid(row=6, column=1)
         mgprotentry.grid(row=6, column=2)
-        Dilution_factor_label.grid(row=7, column=1)
-        Dilution_factorentry.grid(row=7, column=2)
         Result_label.grid(row=8, column=1)
         Output_label.grid(row=8, column=2)
 
@@ -1774,3 +1769,4 @@ class SodWindow(tk.Toplevel):
 if __name__ == "__main__":
     root = MainWindow()
     root.mainloop()
+
