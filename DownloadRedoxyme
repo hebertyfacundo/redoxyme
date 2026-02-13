@@ -4,7 +4,7 @@ Firstly, download 7zip program at https://www.7-zip.org/ . Install 7zip (It is f
 Go to https://github.com/hebertyfacundo/redoxyme. Find main folder.
 Windows
 1.	Click on the Windows folder.
-2.	Download the files Redoxyme.7z.001, Redoxyme.7z.002, Redoxyme.7z.003, Redoxyme.7z.004 and Icon-Art.ico to a computer`s local folder.
-3.	Right click on the Redoxyme.7z.001 file and choose extract to Redoxyme. 
-4.	Double click the Redoxime.exe file to run the GUI. 
+2.	Download the files Redoxyme.7z.001, Redoxyme.7z.002, Redoxyme.7z.003, Redoxyme.7z.004, Redoxyme.7z.004 and Icon-Art.ico to a computer`s local folder.
+3.	Right click on the Redoxyme.7z.001 file and choose extract to Redoxyme (the same folder Icon-Art.ico file is). 
+4.	Double click the Redoxyme.exe file to run the GUI. 
 Observations: Make sure the file Icon-Art.ico file is in the same folder as Redoxyme.exe. This is the same folder the file is going to be saved after the user presses the SAVE FILE Button inside Redoxyme.  
