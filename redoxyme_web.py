@@ -462,7 +462,7 @@ Redoxyme: A Calculator for Antioxidant Enzyme Activity<br>
 Facundo, H.T. (2026). Redoxyme Web: A Calculator for Antioxidant Enzyme Activity [Web application]. Retrieved from https://redoxyme.streamlit.app</p>
 
 <p><strong>Peer-reviewed publication:</strong><br>
-<em>[To be updated upon publication in a peer-reviewed journal]</em></p>
+<em>[Free Radical Biology and Medicine Volume 254, October 2026, Pages 102-111]</em></p>
 
 <p><strong>Source Code:</strong><br>
 GitHub: https://github.com/hebertyfacundo/redoxyme</p>
